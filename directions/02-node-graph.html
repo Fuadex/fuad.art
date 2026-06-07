@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440, initial-scale=1" />
+<title>Fuad Soudah — Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1d1f22;
+    --bg-2: #25282c;
+    --bg-3: #2d3137;
+    --panel: #1a1c1f;
+    --rule: #34383d;
+    --rule-2: #3f444a;
+    --fg: #e8e6e0;
+    --fg-2: #a9a59c;
+    --fg-3: #6e6a62;
+    --accent: #ff7a3a;
+    --accent-2: #ffb066;
+    --wire: #ff7a3a;
+    --green: #76d97a;
+    --blue: #6ab0ff;
+    --purple: #c08cff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); }
+  body {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    width: 1440px; height: 900px;
+    overflow: hidden;
+    user-select: none;
+  }
+  .serif { font-family: "Instrument Serif", "Newsreader", serif; }
+
+  /* App chrome */
+  .app { display: grid; grid-template-rows: 36px 1fr 24px; height: 900px; }
+
+  .menubar {
+    display: flex; align-items: center;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 12px;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--fg-2);
+  }
+  .menubar .brand {
+    color: var(--fg);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .menubar .brand b { color: var(--accent); font-weight: 500; }
+  .menubar .crumbs { display: flex; align-items: center; gap: 6px; }
+  .menubar .crumbs span { color: var(--fg-3); }
+  .menubar .crumbs .cur { color: var(--fg); }
+  .menubar .spacer { flex: 1; }
+  .menubar .ind { display: flex; align-items: center; gap: 6px; }
+  .menubar .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+  .body { display: grid; grid-template-columns: 1fr 460px; min-height: 0; }
+
+  /* Network viewport */
+  .viewport {
+    position: relative;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.045) 1px, transparent 1.5px) 0 0 / 24px 24px,
+      var(--bg);
+    overflow: hidden;
+    border-right: 1px solid var(--rule);
+  }
+  .viewport .vp-head {
+    position: absolute; left: 0; top: 0; right: 0;
+    display: flex; align-items: center; padding: 10px 14px; gap: 14px;
+    z-index: 5;
+    background: linear-gradient(180deg, rgba(29,31,34,0.95), rgba(29,31,34,0));
+    pointer-events: none;
+  }
+  .pill {
+    background: var(--bg-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 4px 9px;
+    color: var(--fg-2);
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+  }
+  .pill b { color: var(--fg); font-weight: 500; }
+  .pill .k { color: var(--fg-3); }
+
+  /* nodes */
+  .nodes { position: absolute; inset: 0; }
+  .node {
+    position: absolute;
+    width: 168px;
+    background: var(--bg-2);
+    border: 1px solid var(--rule-2);
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.4), 0 6px 14px rgba(0,0,0,0.35);
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .node:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.4), 0 10px 22px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,122,58,0.3);
+  }
+  .node.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1.5px var(--accent), 0 12px 24px rgba(255,122,58,0.18);
+  }
+  .node .bar {
+    height: 5px;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+  }
+  .node.t-out .bar { background: var(--purple); }
+  .node.t-in .bar { background: var(--blue); }
+  .node.t-merge .bar { background: var(--green); }
+  .node.t-film .bar { background: var(--accent); }
+  .node.t-meta .bar { background: var(--fg-2); }
+
+  .node .body-r {
+    padding: 9px 12px 11px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .node .type { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); }
+  .node .name { font-size: 13px; font-weight: 500; color: var(--fg); }
+  .node .name b { color: var(--accent); font-weight: 500; }
+
+  /* node ports */
+  .port {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    width: 12px; height: 6px;
+    background: var(--rule-2);
+    border-radius: 0 0 4px 4px;
+  }
+  .port.top { top: -6px; border-radius: 4px 4px 0 0; }
+  .port.bot { bottom: -6px; }
+  .node:hover .port,
+  .node.selected .port { background: var(--accent); }
+
+  /* node indicators (right edge) */
+  .badge {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 9px; color: var(--fg-3);
+    font-weight: 500; letter-spacing: 0.05em;
+  }
+  .flag {
+    position: absolute; top: 9px; right: -4px;
+    display: flex; gap: 2px;
+  }
+  .flag span {
+    width: 9px; height: 14px;
+    background: var(--rule-2);
+    border-radius: 2px;
+  }
+  .node.selected .flag .render { background: var(--blue); }
+  .node.selected .flag .display { background: var(--accent); }
+
+  /* SVG wires layer */
+  .wires { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .wire {
+    fill: none;
+    stroke: var(--rule-2);
+    stroke-width: 1.6;
+  }
+  .wire.lit { stroke: var(--accent); }
+  .wire.flow {
+    stroke: var(--accent);
+    stroke-dasharray: 4 6;
+    animation: flow 1.4s linear infinite;
+    opacity: 0.85;
+  }
+  @keyframes flow { to { stroke-dashoffset: -20; } }
+
+  /* group rectangle (network box) */
+  .group {
+    position: absolute;
+    border: 1px dashed var(--rule-2);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.012);
+  }
+  .group .glabel {
+    position: absolute; top: -10px; left: 14px;
+    font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg-3); background: var(--bg); padding: 0 8px;
+  }
+
+  /* Inspector */
+  .inspector {
+    background: var(--panel);
+    display: grid;
+    grid-template-rows: 38px 1fr;
+    min-height: 0;
+  }
+  .insp-tabs {
+    display: flex; align-items: center;
+    border-bottom: 1px solid var(--rule);
+    padding: 0 0 0 12px;
+    background: var(--bg-2);
+    gap: 0;
+  }
+  .insp-tabs .tab {
+    padding: 10px 14px;
+    font-size: 10.5px; color: var(--fg-3);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .insp-tabs .tab.active { color: var(--fg); border-bottom-color: var(--accent); }
+  .insp-tabs .right { margin-left: auto; padding-right: 12px; color: var(--fg-3); font-size: 10.5px; }
+
+  .insp-body {
+    overflow-y: auto;
+    padding: 18px 18px 24px;
+  }
+  .insp-head {
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 16px;
+  }
+  .insp-head .swatch { width: 14px; height: 14px; border-radius: 2px; background: var(--accent); }
+  .insp-head .name { font-size: 15px; font-weight: 500; color: var(--fg); }
+  .insp-head .path { color: var(--fg-3); font-size: 11px; margin-left: auto; }
+
+  .insp h1 {
+    font-family: "Instrument Serif", serif;
+    font-weight: 400; font-style: italic;
+    font-size: 42px; line-height: 1; letter-spacing: -0.01em;
+    color: var(--fg);
+    margin-bottom: 12px;
+  }
+  .insp p {
+    font-family: "Instrument Serif", serif;
+    font-size: 18px; line-height: 1.42;
+    color: var(--fg-2);
+    margin-bottom: 12px;
+  }
+  .insp p em { color: var(--accent-2); font-style: italic; }
+
+  .params { display: flex; flex-direction: column; gap: 0; }
+  .param {
+    display: grid; grid-template-columns: 120px 1fr;
+    align-items: center; gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--rule);
+    font-size: 11.5px;
+  }
+  .param .k { color: var(--fg-3); }
+  .param .v { color: var(--fg); }
+  .param .v.mono { font-family: "JetBrains Mono", monospace; }
+  .param .v.acc { color: var(--accent-2); }
+
+  .list { display: flex; flex-direction: column; }
+  .item {
+    display: grid; grid-template-columns: 48px 1fr auto;
+    align-items: center; gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule);
+    transition: background .12s;
+  }
+  .item .num { color: var(--fg-3); font-size: 10.5px; }
+  .item .ttl { font-family: "Instrument Serif", serif; font-size: 18px; font-style: italic; color: var(--fg); }
+  .item .yr { color: var(--fg-3); font-size: 11px; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent);
+    color: #1a0f08;
+    padding: 9px 14px;
+    border-radius: 2px;
+    font-weight: 500; font-size: 12px;
+    text-decoration: none;
+    margin-top: 14px;
+  }
+  .cta:hover { background: var(--accent-2); }
+
+  /* Status bar */
+  .statusbar {
+    display: flex; align-items: center;
+    background: var(--bg-2);
+    border-top: 1px solid var(--rule);
+    padding: 0 12px;
+    gap: 18px;
+    font-size: 10.5px;
+    color: var(--fg-3);
+  }
+  .statusbar b { color: var(--fg); font-weight: 500; }
+  .statusbar .sep { color: var(--rule-2); }
+  .statusbar .right { margin-left: auto; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="menubar">
+    <div class="brand">fuad<b>.</b>art</div>
+    <div class="crumbs">
+      <span>/obj/</span><span>fuad/</span><span class="cur">portfolio</span><span style="color:var(--accent)">●</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="ind"><span class="dot"></span>SOP NETWORK · 12 nodes · cooked 1.4ms</div>
+    <div class="pill"><span class="k">F</span> FRAME <b>1042</b></div>
+    <div class="pill"><b>HOUDINI</b> 20.5</div>
+  </div>
+
+  <div class="body">
+
+    <div class="viewport">
+      <div class="vp-head">
+        <span class="pill"><b>● PORTFOLIO</b> &nbsp;/obj/fuad/portfolio</span>
+        <span class="pill"><span class="k">VIEW</span> Network</span>
+        <span class="pill"><span class="k">LAYOUT</span> Auto</span>
+      </div>
+
+      <svg class="wires" viewBox="0 0 980 836" preserveAspectRatio="none">
+        <!-- in_world → bio, reel, films -->
+        <path class="wire flow" d="M150 100 C 150 140, 110 150, 110 200 L 110 220" />
+        <path class="wire flow" d="M150 110 C 220 140, 300 150, 300 200 L 300 220" />
+        <path class="wire flow" d="M150 110 C 350 140, 520 150, 520 200 L 520 220" />
+        <path class="wire flow" d="M150 110 C 480 140, 760 150, 760 200 L 760 220" />
+
+        <!-- films group inner -->
+        <path class="wire" d="M560 350 C 560 380, 540 390, 540 420 L 540 440" />
+        <path class="wire" d="M640 350 C 640 380, 640 390, 640 420 L 640 440" />
+        <path class="wire" d="M720 350 C 720 380, 740 390, 740 420 L 740 440" />
+        <path class="wire" d="M800 350 C 800 380, 840 390, 840 420 L 840 440" />
+        <path class="wire" d="M880 350 C 880 380, 940 390, 940 420 L 940 440" />
+
+        <!-- films merge to films output -->
+        <path class="wire" d="M540 510 C 540 540, 640 540, 640 580 L 640 600" />
+        <path class="wire" d="M640 510 C 640 540, 640 540, 640 580 L 640 600" />
+        <path class="wire" d="M740 510 C 740 540, 640 540, 640 580 L 640 600" />
+        <path class="wire" d="M840 510 C 840 540, 640 540, 640 580 L 640 600" />
+        <path class="wire" d="M940 510 C 940 540, 640 540, 640 580 L 640 600" />
+
+        <!-- merge → output -->
+        <path class="wire flow" d="M110 350 C 110 380, 110 400, 230 430 C 350 460, 430 540, 540 660 L 540 700" />
+        <path class="wire flow" d="M300 350 C 300 400, 300 460, 430 540 C 470 580, 510 640, 540 700 L 540 700" />
+        <path class="wire flow" d="M640 700 C 640 720, 600 730, 580 740 L 540 740" />
+        <path class="wire flow" d="M520 350 C 520 400, 520 540, 540 660 L 540 700" />
+
+        <!-- final to contact -->
+        <path class="wire flow" d="M540 800 C 540 820, 540 820, 540 836" style="opacity:0.5" />
+      </svg>
+
+      <div class="nodes">
+        <!-- world input -->
+        <div class="node t-in" data-id="world" style="left: 56px; top: 60px; width: 200px;">
+          <div class="bar"></div>
+          <span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">input · world</div>
+            <div class="name">fuad<b>_soudah</b></div>
+          </div>
+          <div class="badge">in1</div>
+        </div>
+
+        <!-- bio -->
+        <div class="node t-meta" data-id="about" style="left: 36px; top: 220px;">
+          <div class="bar"></div>
+          <span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">attribute</div>
+            <div class="name">about<b>1</b></div>
+          </div>
+          <div class="badge">str</div>
+        </div>
+
+        <!-- reel -->
+        <div class="node t-out" data-id="reel" style="left: 226px; top: 220px;">
+          <div class="bar"></div>
+          <span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">camera</div>
+            <div class="name">reel<b>1</b></div>
+          </div>
+          <div class="badge">▶</div>
+        </div>
+
+        <!-- cv -->
+        <div class="node t-meta" data-id="cv" style="left: 446px; top: 220px;">
+          <div class="bar"></div>
+          <span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">timeline</div>
+            <div class="name">cv<b>_2026</b></div>
+          </div>
+          <div class="badge">i32</div>
+        </div>
+
+        <!-- films group label -->
+        <div class="group" style="left: 480px; top: 188px; width: 480px; height: 530px;">
+          <div class="glabel">selected_films · subnet</div>
+        </div>
+
+        <!-- films merge node -->
+        <div class="node t-film" data-id="films" style="left: 676px; top: 220px;">
+          <div class="bar"></div>
+          <span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">subnet</div>
+            <div class="name">films<b>_in</b></div>
+          </div>
+          <div class="badge">14</div>
+        </div>
+
+        <!-- individual films (small) -->
+        <div class="node t-film" data-id="f-motu" style="left: 484px; top: 340px; width: 116px;">
+          <div class="bar"></div><span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">2026 · pyro</div>
+            <div class="name">motu</div>
+          </div>
+        </div>
+        <div class="node t-film" data-id="f-toxic" style="left: 584px; top: 340px; width: 116px;">
+          <div class="bar"></div><span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">2025 · rbd</div>
+            <div class="name">toxic</div>
+          </div>
+        </div>
+        <div class="node t-film" data-id="f-furiosa" style="left: 684px; top: 340px; width: 116px;">
+          <div class="bar"></div><span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">2024 · sand</div>
+            <div class="name">furiosa</div>
+          </div>
+        </div>
+        <div class="node t-film" data-id="f-playdirty" style="left: 784px; top: 340px; width: 116px;">
+          <div class="bar"></div><span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">2025 · snow</div>
+            <div class="name">play_dirty</div>
+          </div>
+        </div>
+        <div class="node t-film" data-id="f-m3gan" style="left: 884px; top: 340px; width: 86px;">
+          <div class="bar"></div><span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">2022</div>
+            <div class="name">m3gan</div>
+          </div>
+        </div>
+
+        <!-- films merge -->
+        <div class="node t-merge" data-id="films-out" style="left: 580px; top: 600px;">
+          <div class="bar"></div><span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">merge</div>
+            <div class="name">selected<b>_out</b></div>
+          </div>
+        </div>
+
+        <!-- final compose -->
+        <div class="node t-out" data-id="page" style="left: 460px; top: 700px;">
+          <div class="bar"></div><span class="port top"></span><span class="port bot"></span>
+          <div class="body-r">
+            <div class="type">output · compose</div>
+            <div class="name">fuad<b>.art</b></div>
+          </div>
+          <div class="badge" style="color:var(--accent)">⊕</div>
+        </div>
+
+        <!-- contact -->
+        <div class="node t-meta" data-id="contact" style="left: 750px; top: 700px;">
+          <div class="bar"></div><span class="port top"></span>
+          <div class="body-r">
+            <div class="type">output · contact</div>
+            <div class="name">say<b>_hello</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspector panel -->
+    <div class="inspector">
+      <div class="insp-tabs">
+        <div class="tab active">Parameters</div>
+        <div class="tab">Spare</div>
+        <div class="tab">Render</div>
+        <div class="right">⌘1 Tree · ⌘2 Net · ⌘3 Insp</div>
+      </div>
+      <div class="insp-body" id="inspBody">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span><b>fuad_soudah</b> · FX Technical Director</span>
+    <span class="sep">|</span>
+    <span>DNEG Sydney · open to commissions</span>
+    <span class="sep">|</span>
+    <span>last commit <b>3h ago</b></span>
+    <span class="right">drag a node · click to inspect · scroll inspector for more</span>
+  </div>
+</div>
+
+<script>
+  const DATA = {
+    world: {
+      type: 'INPUT · WORLD',
+      color: 'var(--blue)',
+      path: '/obj/fuad/portfolio/fuad_soudah',
+      title: 'Fuad Soudah',
+      content: `<p>FX Technical Director, based in <em>Sydney</em>. Five years in Houdini. Currently at DNEG.</p>
+        <div class="params">
+          <div class="param"><span class="k">name</span><span class="v">Fuad Soudah</span></div>
+          <div class="param"><span class="k">role</span><span class="v">FX Technical Director</span></div>
+          <div class="param"><span class="k">city</span><span class="v">Sydney, AU</span></div>
+          <div class="param"><span class="k">timezone</span><span class="v mono">+11:00 UTC</span></div>
+          <div class="param"><span class="k">years_in_houdini</span><span class="v acc mono">5</span></div>
+          <div class="param"><span class="k">studio</span><span class="v">DNEG Sydney</span></div>
+          <div class="param"><span class="k">status</span><span class="v acc">accepting_work</span></div>
+        </div>
+        <a class="cta" href="mailto:hello@fuad.art">say_hello() ↗</a>`
+    },
+    about: {
+      type: 'ATTRIBUTE · STRING',
+      color: 'var(--fg-2)',
+      path: '/obj/fuad/portfolio/about1',
+      title: 'about1',
+      content: `<h1>"A simulation is a stubborn argument with physics."</h1>
+        <p>I spend my days losing it carefully — coaxing grains, smoke and broken things into behaving like they belong on a screen the size of a building.</p>
+        <p>Background in interaction design and creative tech from <em>Parsons, USyd, and LMU Munich</em>, before a hard pivot into VFX at Fin Design + Effects, then DNEG.</p>
+        <p>I template the things I have to make twice.</p>`
+    },
+    reel: {
+      type: 'CAMERA · OUTPUT',
+      color: 'var(--purple)',
+      path: '/obj/fuad/portfolio/reel1',
+      title: 'reel1 — 2026',
+      content: `<div style="aspect-ratio: 16/9; background: linear-gradient(180deg, #2a1408, #c45a2e 60%, #f0b06b); display:flex; align-items:center; justify-content:center; color:#1a0f08; font-family: 'Instrument Serif', serif; font-style:italic; font-size: 32px; border-radius: 2px; position: relative;">
+          <div style="position:absolute; inset: 8px; border: 1px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center;">▶ play_reel.mp4</div>
+        </div>
+        <div class="params" style="margin-top: 16px;">
+          <div class="param"><span class="k">duration</span><span class="v mono">02:14</span></div>
+          <div class="param"><span class="k">resolution</span><span class="v mono">3840×2160</span></div>
+          <div class="param"><span class="k">codec</span><span class="v mono">h.265</span></div>
+          <div class="param"><span class="k">host</span><span class="v">Vimeo</span></div>
+        </div>
+        <a class="cta" href="https://vimeo.com/1130622647" target="_blank">open in vimeo ↗</a>`
+    },
+    cv: {
+      type: 'TIMELINE · INT[]',
+      color: 'var(--fg-2)',
+      path: '/obj/fuad/portfolio/cv_2026',
+      title: 'cv_2026',
+      content: `<div class="list">
+        <div class="item"><span class="num">2025—26</span><span class="ttl">FX Technical Director · DNEG Sydney</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">May 2025</span><span class="ttl">Houdini FX Freelance · Commercial</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">2023—25</span><span class="ttl">Junior FX TD · DNEG Sydney</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">2021—22</span><span class="ttl">Junior FX Artist · Fin Design + Effects</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">2020</span><span class="ttl">Grad Cert · Animal Logic Academy / UTS</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">2018—21</span><span class="ttl">M.IDEA · University of Sydney</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">2019</span><span class="ttl">Exchange · Parsons School of Design</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">2018</span><span class="ttl">Exchange · KAIST · Aalto</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">2015—18</span><span class="ttl">B.Design Computing · USyd</span><span class="yr">→</span></div>
+        <div class="item"><span class="num">2016—17</span><span class="ttl">Exchange · LMU München</span><span class="yr">→</span></div>
+      </div>`
+    },
+    films: {
+      type: 'SUBNET · 14 FILMS',
+      color: 'var(--accent)',
+      path: '/obj/fuad/portfolio/films_in',
+      title: 'films_in',
+      content: `<p>Fourteen feature credits. The simulation is the work; the credit is the receipt.</p>
+        <div class="list">
+          <div class="item"><span class="num">2026</span><span class="ttl">Masters of the Universe</span><span class="yr">DNEG · pyro</span></div>
+          <div class="item"><span class="num">2025</span><span class="ttl">Toxic</span><span class="yr">DNEG · rbd</span></div>
+          <div class="item"><span class="num">2025</span><span class="ttl">Thamma</span><span class="yr">DNEG · dust</span></div>
+          <div class="item"><span class="num">2025</span><span class="ttl">Play Dirty</span><span class="yr">DNEG · snow</span></div>
+          <div class="item"><span class="num">2025</span><span class="ttl">The Last Frontier</span><span class="yr">DNEG · rbd</span></div>
+          <div class="item"><span class="num">2024</span><span class="ttl">Mad Max: Furiosa</span><span class="yr">DNEG · sand</span></div>
+          <div class="item"><span class="num">2024</span><span class="ttl">Bureau 749</span><span class="yr">DNEG VAN · vol</span></div>
+          <div class="item"><span class="num">2024</span><span class="ttl">Sky Force / Fighter</span><span class="yr">DNEG MUM · pyro</span></div>
+          <div class="item"><span class="num">2022</span><span class="ttl">M3GAN</span><span class="yr">Fin · vellum</span></div>
+          <div class="item"><span class="num">2022</span><span class="ttl">3000 Years of Longing</span><span class="yr">Fin · pyro</span></div>
+          <div class="item"><span class="num">2022</span><span class="ttl">Interceptor · The Nevers</span><span class="yr">Fin · misc</span></div>
+          <div class="item"><span class="num">2022</span><span class="ttl">Ticket to Paradise</span><span class="yr">Fin · water rnd</span></div>
+          <div class="item"><span class="num">2022</span><span class="ttl">Bridge Hollow</span><span class="yr">Fin · flame</span></div>
+        </div>`
+    },
+    'f-motu': {
+      type: 'NODE · 2026',
+      color: 'var(--accent)',
+      path: '/obj/fuad/portfolio/films/motu',
+      title: 'Masters of the Universe',
+      content: `<div style="aspect-ratio: 16/9; background: linear-gradient(180deg, #2a1408, #c45a2e 60%, #f0b06b); border-radius: 2px;"></div>
+        <p style="margin-top:14px">Impact dust and particle simulation. Magical smoke contribution. Automation and Renderman lookdev integration on a major magical effect.</p>
+        <div class="params">
+          <div class="param"><span class="k">studio</span><span class="v">DNEG Sydney</span></div>
+          <div class="param"><span class="k">type</span><span class="v">pyro · particles · lookdev</span></div>
+          <div class="param"><span class="k">role</span><span class="v acc">FX TD</span></div>
+        </div>`
+    },
+    'f-toxic': {
+      type: 'NODE · 2025',
+      color: 'var(--accent)',
+      path: '/obj/fuad/portfolio/films/toxic',
+      title: 'Toxic',
+      content: `<div style="aspect-ratio: 16/9; background: linear-gradient(135deg, #0c1620, #4a6b88); border-radius: 2px;"></div>
+        <p style="margin-top:14px">Explosive dust, supporting concrete & wood debris RBD, trailing fire & particles, RBD glass simulation.</p>`
+    },
+    'f-furiosa': {
+      type: 'NODE · 2024',
+      color: 'var(--accent)',
+      path: '/obj/fuad/portfolio/films/furiosa',
+      title: 'Mad Max: Furiosa',
+      content: `<div style="aspect-ratio: 16/9; background: linear-gradient(170deg, #b58146, #5e3a18); border-radius: 2px;"></div>
+        <p style="margin-top:14px"><em>Foundation team — initial 10 employees.</em> Built the Sandstorm asset: ground & sky volumes, sandsnakes, windlips particulates. Wedged & rendered across 3 sequences.</p>
+        <div class="params">
+          <div class="param"><span class="k">layers</span><span class="v mono">ground · sky · windlips</span></div>
+          <div class="param"><span class="k">agents</span><span class="v acc mono">~15,000</span></div>
+          <div class="param"><span class="k">renderer</span><span class="v">Mantra → Nuke</span></div>
+        </div>`
+    },
+    'f-playdirty': {
+      type: 'NODE · 2025',
+      color: 'var(--accent)',
+      path: '/obj/fuad/portfolio/films/play_dirty',
+      title: 'Play Dirty',
+      content: `<div style="aspect-ratio: 16/9; background: linear-gradient(180deg, #3a4856, #c8d0d8); border-radius: 2px;"></div>
+        <p style="margin-top:14px">Templated snowfall asset; pushed snow environment and sparks shots.</p>`
+    },
+    'f-m3gan': {
+      type: 'NODE · 2022',
+      color: 'var(--accent)',
+      path: '/obj/fuad/portfolio/films/m3gan',
+      title: 'M3GAN',
+      content: `<div style="aspect-ratio: 16/9; background: linear-gradient(160deg, #2a201a, #7a5a3a); border-radius: 2px;"></div>
+        <p style="margin-top:14px">Layered cloth and an intricate set of hundreds of connected wires, cables, tubes, hardware parts in Vellum. RnD on oil, muzzle flashes, scorch marks, electrical discharges. <em>Custom deformer solver.</em></p>`
+    },
+    'films-out': {
+      type: 'MERGE · OUTPUT',
+      color: 'var(--green)',
+      path: '/obj/fuad/portfolio/selected_out',
+      title: 'selected_out',
+      content: `<p>Merge of 14 film nodes into a single selected reel. Feeds the page output below.</p>
+        <div class="params">
+          <div class="param"><span class="k">inputs</span><span class="v mono acc">14</span></div>
+          <div class="param"><span class="k">merge_type</span><span class="v">Append</span></div>
+        </div>`
+    },
+    page: {
+      type: 'OUTPUT · COMPOSE',
+      color: 'var(--purple)',
+      path: '/obj/fuad/portfolio/fuad.art',
+      title: 'fuad.art',
+      content: `<h1 style="font-style: italic;">fuad.art</h1>
+        <p>The final compose. One page. One feed. The output of a five-year career as procedural composition.</p>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.1em;">// you are looking at it.</p>`
+    },
+    contact: {
+      type: 'OUTPUT · CONTACT',
+      color: 'var(--fg-2)',
+      path: '/obj/fuad/portfolio/say_hello',
+      title: 'say_hello',
+      content: `<h1 style="font-style: italic;">Reach out.</h1>
+        <p>Open to commissions, RnD collabs, and the kind of work that lets me write VEX at 1am.</p>
+        <div class="params">
+          <div class="param"><span class="k">email</span><span class="v acc">hello@fuad.art</span></div>
+          <div class="param"><span class="k">linkedin</span><span class="v">/in/fuad-soudah</span></div>
+          <div class="param"><span class="k">imdb</span><span class="v">nm13765535</span></div>
+          <div class="param"><span class="k">vimeo</span><span class="v">/fuad-soudah</span></div>
+        </div>
+        <a class="cta" href="mailto:hello@fuad.art">compose mail ↗</a>`
+    }
+  };
+
+  const inspBody = document.getElementById('inspBody');
+  const nodes = document.querySelectorAll('.node');
+
+  function select(id) {
+    nodes.forEach(n => n.classList.toggle('selected', n.dataset.id === id));
+    const d = DATA[id];
+    if (!d) return;
+    inspBody.innerHTML = `
+      <div class="insp-head">
+        <div class="swatch" style="background:${d.color}"></div>
+        <div class="name">${d.title}</div>
+        <div class="path">${d.path}</div>
+      </div>
+      <div class="insp">${d.content}</div>
+    `;
+    inspBody.scrollTop = 0;
+  }
+
+  nodes.forEach(n => n.addEventListener('click', () => select(n.dataset.id)));
+
+  // default
+  select('world');
+
+  // Make nodes draggable within the viewport
+  nodes.forEach(node => {
+    let dragging = false, sx = 0, sy = 0, sl = 0, st = 0;
+    node.addEventListener('mousedown', (e) => {
+      dragging = true;
+      sx = e.clientX; sy = e.clientY;
+      sl = parseFloat(node.style.left); st = parseFloat(node.style.top);
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      node.style.left = (sl + e.clientX - sx) + 'px';
+      node.style.top = (st + e.clientY - sy) + 'px';
+    });
+    document.addEventListener('mouseup', () => { dragging = false; });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>fuad.art — FX snippets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0c10; --bg-2: #121319; --panel: #15171f; --rule: #23262f;
+    --fg: #ecebf0; --fg-2: #9a99ad; --fg-3: #5d5c70;
+    --a: #ff7a3a; --a2: #4dd0ff; --a3: #b78cff; --green: #76d97a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); }
+  body { font-family: "Sora", system-ui, sans-serif; font-weight: 300; line-height: 1.5; }
+  .mono { font-family: "IBM Plex Mono", monospace; }
+  a { color: var(--a2); text-decoration: none; }
+
+  .head { max-width: 1080px; margin: 0 auto; padding: 64px 32px 32px; }
+  .kick { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 18px; }
+  h1 { font-size: 40px; font-weight: 500; letter-spacing: -0.02em; }
+  h1 b { background: linear-gradient(100deg, var(--a), var(--a3) 55%, var(--a2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { margin-top: 16px; font-size: 16px; color: var(--fg-2); max-width: 680px; }
+  .toc { display: flex; gap: 10px; margin-top: 26px; flex-wrap: wrap; }
+  .toc a { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--fg-2); border: 1px solid var(--rule); padding: 8px 14px; border-radius: 100px; }
+  .toc a:hover { border-color: var(--fg-3); color: var(--fg); }
+
+  .snippet { max-width: 1080px; margin: 0 auto; padding: 40px 32px 56px; border-top: 1px solid var(--rule); }
+  .snippet:first-of-type { border-top: 0; }
+  .s-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+  .s-head h2 { font-size: 26px; font-weight: 500; letter-spacing: -0.01em; }
+  .s-head .src-tag { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--fg-3); }
+  .s-sub { color: var(--fg-2); font-size: 15px; margin-bottom: 22px; max-width: 720px; }
+  .s-sub code { font-family: "IBM Plex Mono", monospace; font-size: 13px; background: var(--bg-2); padding: 2px 6px; border-radius: 4px; color: var(--a2); }
+
+  .demo { position: relative; height: 280px; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: #060606; }
+  .demo .hint { position: absolute; left: 14px; bottom: 12px; z-index: 5; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.06em; pointer-events: none; }
+  .demo .badge { position: absolute; right: 14px; top: 12px; z-index: 5; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); }
+  .demo .badge::before { content: "● "; }
+
+  /* demo 2 interior */
+  .fxrows { position: absolute; inset: 0; padding: 26px 28px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+  .fxrow { display: grid; grid-template-columns: 40px 1fr auto; gap: 16px; align-items: center; padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); cursor: pointer; transition: background .15s; }
+  .fxrow:hover { background: rgba(255,255,255,0.05); }
+  .fxrow .n { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--fg-3); }
+  .fxrow .t { font-family: "Sora", serif; font-size: 18px; }
+  .fxrow .fx { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); border: 1px solid var(--rule); padding: 4px 9px; border-radius: 100px; }
+  #fx-pop { position: fixed; width: 200px; height: 124px; border: 1px solid rgba(255,255,255,0.2); background: #060606; z-index: 99; pointer-events: none; opacity: 0; transition: opacity .15s; box-shadow: 0 16px 40px rgba(0,0,0,0.6); border-radius: 6px; overflow: hidden; }
+  #fx-pop canvas { width: 100%; height: 100%; display: block; }
+  #fx-pop .cap { position: absolute; left: 0; right: 0; bottom: 0; font-family: "IBM Plex Mono", monospace; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; padding: 5px 8px; background: linear-gradient(0deg, rgba(0,0,0,0.85), transparent); }
+
+  .code-wrap { margin-top: 18px; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--panel); }
+  .code-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--rule); background: var(--bg-2); }
+  .code-bar .fn { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--fg-2); }
+  .code-bar .fn b { color: var(--a); font-weight: 500; }
+  .copy { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--fg-2); background: transparent; border: 1px solid var(--rule); border-radius: 6px; padding: 6px 12px; cursor: pointer; transition: all .15s; }
+  .copy:hover { border-color: var(--fg-3); color: var(--fg); }
+  .copy.done { color: var(--green); border-color: var(--green); }
+  pre { margin: 0; padding: 18px 16px; overflow-x: auto; max-height: 420px; }
+  pre code { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; line-height: 1.65; color: #cdd2da; white-space: pre; tab-size: 2; }
+
+  .foot { max-width: 1080px; margin: 0 auto; padding: 30px 32px 80px; border-top: 1px solid var(--rule); color: var(--fg-3); font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.06em; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<div id="fx-pop"><canvas width="200" height="124"></canvas><div class="cap"></div></div>
+
+<header class="head">
+  <div class="kick">fuad.art · effects toolkit</div>
+  <h1>Three <b>reusable FX</b> snippets</h1>
+  <p class="lede">Drop-in, dependency-free helpers pulled from the explorations. Each is a single factory function — copy it, call it on a target element, done. No build step, no libraries.</p>
+  <nav class="toc">
+    <a href="#trail">01 — Cursor dust trail</a>
+    <a href="#hover">02 — Hover sim previews</a>
+    <a href="#field">03 — Flow-field background</a>
+  </nav>
+</header>
+
+<!-- 01 ------------------------------------------------------ -->
+<section class="snippet" id="trail">
+  <div class="s-head"><h2>01 — Cursor dust trail</h2><span class="src-tag">from 01 · Atelier</span></div>
+  <p class="s-sub">A full-window canvas that emits drifting dust as the cursor moves — speed-reactive, with gravity and fade. Call <code>createDustTrail()</code>. Move your cursor over the panel.</p>
+  <div class="demo" data-demo="trail"><span class="badge">live</span><span class="hint">move your cursor →</span></div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="fn"><b>createDustTrail</b>(opts?)</span><button class="copy">Copy</button></div>
+    <pre><code class="render" data-for="trail"></code></pre>
+  </div>
+</section>
+
+<!-- 02 ------------------------------------------------------ -->
+<section class="snippet" id="hover">
+  <div class="s-head"><h2>02 — Hover simulation previews</h2><span class="src-tag">from 03 · Index</span></div>
+  <p class="s-sub">Hover a row and a small live particle sim of that effect type follows the cursor — fire, glass, snow, sparks, sand, water. Drive it with <code>createFXHover(rows)</code> where each row carries a <code>data-fx</code>. Hover the rows below.</p>
+  <div class="demo" data-demo="hover">
+    <span class="badge">live</span>
+    <div class="fxrows">
+      <div class="fxrow" data-fx="sand"><span class="n">001</span><span class="t">Mad Max: Furiosa</span><span class="fx">Sandstorm</span></div>
+      <div class="fxrow" data-fx="fire"><span class="n">002</span><span class="t">Masters of the Universe</span><span class="fx">Pyro</span></div>
+      <div class="fxrow" data-fx="glass"><span class="n">003</span><span class="t">Toxic</span><span class="fx">RBD glass</span></div>
+      <div class="fxrow" data-fx="snow"><span class="n">004</span><span class="t">Play Dirty</span><span class="fx">Snowfall</span></div>
+      <div class="fxrow" data-fx="spark"><span class="n">005</span><span class="t">The Last Frontier</span><span class="fx">Sparks</span></div>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="fn"><b>createFXHover</b>(rows, popEl?)</span><button class="copy">Copy</button></div>
+    <pre><code class="render" data-for="hover"></code></pre>
+  </div>
+</section>
+
+<!-- 03 ------------------------------------------------------ -->
+<section class="snippet" id="field">
+  <div class="s-head"><h2>03 — Flow-field background</h2><span class="src-tag">from 05 · Field</span></div>
+  <p class="s-sub">A living particle field driven by layered-sine curl noise, with a cursor force (push, or hold to pull). Call <code>createFlowField(container, opts)</code>. Move and click-hold over the panel.</p>
+  <div class="demo" data-demo="field"><span class="badge">live</span><span class="hint">move · click-hold to pull</span></div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="fn"><b>createFlowField</b>(container, opts?)</span><button class="copy">Copy</button></div>
+    <pre><code class="render" data-for="field"></code></pre>
+  </div>
+</section>
+
+<div class="foot"><span>fuad.art — effects toolkit</span><span>vanilla js · no dependencies · 2026</span></div>
+
+<!-- ===== snippet sources (single source of truth: shown AND run) ===== -->
+<script type="text/plain" id="src-trail">
+/* Cursor dust trail. Returns a stop() fn.
+   createDustTrail({ target=window, hue=30, max=400 }) */
+function createDustTrail(opts = {}) {
+  const target = opts.target || window;
+  const hue = opts.hue ?? 30;
+  const max = opts.max ?? 400;
+  const host = target === window ? document.body : target;
+  const canvas = document.createElement('canvas');
+  Object.assign(canvas.style, { position: target === window ? 'fixed' : 'absolute', inset: 0, pointerEvents: 'none', zIndex: 9 });
+  host.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  const rect = () => target === window
+    ? { left: 0, top: 0, width: innerWidth, height: innerHeight }
+    : host.getBoundingClientRect();
+  function size() { const r = rect(); canvas.width = r.width; canvas.height = r.height; }
+  size(); addEventListener('resize', size);
+
+  const ps = [];
+  let px = 0, py = 0;
+  function onMove(e) {
+    const r = rect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    const dx = mx - px, dy = my - py, v = Math.hypot(dx, dy);
+    for (let i = 0; i < Math.min(6, v / 4); i++) {
+      ps.push({ x: mx + (Math.random() - .5) * 6, y: my + (Math.random() - .5) * 6,
+        vx: (Math.random() - .5) * .4 - dx * .04, vy: (Math.random() - .5) * .4 - dy * .04,
+        life: 1, decay: .005 + Math.random() * .01, size: 1 + Math.random() * 2.2,
+        hue: hue + Math.random() * 10 });
+    }
+    px = mx; py = my;
+    if (ps.length > max) ps.splice(0, ps.length - max);
+  }
+  target.addEventListener('mousemove', onMove);
+
+  let raf;
+  (function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = ps.length - 1; i >= 0; i--) {
+      const p = ps[i];
+      p.x += p.vx; p.y += p.vy; p.vy += .012; p.vx *= .985; p.vy *= .985;
+      p.life -= p.decay;
+      if (p.life <= 0) { ps.splice(i, 1); continue; }
+      ctx.fillStyle = `hsla(${p.hue},45%,55%,${p.life * .5})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, 6.283); ctx.fill();
+    }
+    raf = requestAnimationFrame(tick);
+  })();
+
+  return function stop() { cancelAnimationFrame(raf); target.removeEventListener('mousemove', onMove); canvas.remove(); };
+}
+</script>
+
+<script type="text/plain" id="src-hover">
+/* Hover sim previews. Each row needs a data-fx in:
+   fire|glass|snow|spark|sand|dust|water|vellum
+   createFXHover(rows, popEl) — popEl has a <canvas> + a .cap element. */
+function createFXHover(rows, popEl) {
+  const canvas = popEl.querySelector('canvas');
+  const cap = popEl.querySelector('.cap');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  let parts = [], type = 'dust', raf = null, alive = false;
+
+  const PAL = {
+    fire:  { bg:'#160a04', cols:['#ff7a3a','#ffb066','#ffd9a0'], g:.04,  up:true,  label:'PYRO · VOXELS' },
+    glass: { bg:'#08121c', cols:['#9fd0ff','#cfe8ff','#fff'],    g:.14,  up:false, label:'RBD · GLASS SHARDS' },
+    snow:  { bg:'#1a2230', cols:['#fff','#dfeaf5','#c8d4e0'],    g:.03,  up:false, label:'SNOWFALL · POP' },
+    spark: { bg:'#0d0a06', cols:['#ffd060','#ff9a3a','#fff0c0'], g:.10,  up:false, label:'SPARKS · DRAG' },
+    sand:  { bg:'#1c1206', cols:['#caa05a','#7a5226','#e0c088'], g:.015, up:true,  label:'SANDSTORM · HEIGHTFIELD' },
+    dust:  { bg:'#161108', cols:['#b9a07a','#8a7350','#d8c6a4'], g:.01,  up:true,  label:'DUST · SPARSE PYRO' },
+    water: { bg:'#06141c', cols:['#6ab0ff','#a0d8ff','#cfeeff'], g:.12,  up:false, label:'FLIP · PARTICLES' },
+    vellum:{ bg:'#120e0a', cols:['#caa','#977','#b98'],          g:.06,  up:false, label:'VELLUM · CLOTH' },
+  };
+
+  function seed(t) {
+    type = t; parts = []; const p = PAL[t];
+    for (let i = 0; i < 220; i++) parts.push(respawn({}, p, true));
+    cap.textContent = p.label;
+  }
+  function respawn(q, p, rnd) {
+    q.x = Math.random() * W;
+    q.y = p.up ? H - Math.random() * (rnd ? H : 20) : -Math.random() * 20;
+    q.vx = (Math.random() - .5) * 1.2;
+    q.vy = p.up ? -(.4 + Math.random() * 1.6) : (.4 + Math.random() * 1.4);
+    q.life = rnd ? Math.random() : 1;
+    q.size = .6 + Math.random() * 2.4;
+    q.col = p.cols[(Math.random() * p.cols.length) | 0];
+    return q;
+  }
+  function frame() {
+    const p = PAL[type];
+    ctx.fillStyle = p.bg; ctx.fillRect(0, 0, W, H);
+    for (const q of parts) {
+      q.x += q.vx; q.y += q.vy; q.vy += p.up ? -p.g * .3 : p.g; q.vx *= .99; q.life -= .006;
+      if (q.life <= 0 || q.y < -10 || q.y > H + 10) respawn(q, p, false);
+      ctx.globalAlpha = Math.max(0, Math.min(1, q.life)) * .9;
+      ctx.fillStyle = q.col;
+      if (type === 'glass' || type === 'vellum') ctx.fillRect(q.x, q.y, q.size * 1.6, q.size * 1.6);
+      else { ctx.beginPath(); ctx.arc(q.x, q.y, q.size, 0, 6.283); ctx.fill(); }
+    }
+    ctx.globalAlpha = 1;
+    raf = requestAnimationFrame(frame);
+  }
+
+  rows.forEach(r => {
+    r.addEventListener('mouseenter', () => { seed(r.dataset.fx); alive = true; popEl.style.opacity = 1; if (!raf) frame(); });
+    r.addEventListener('mousemove', e => {
+      let x = e.clientX + 22, y = e.clientY - 62;
+      if (x + popEl.offsetWidth > innerWidth) x = e.clientX - popEl.offsetWidth - 22;
+      y = Math.max(8, Math.min(innerHeight - popEl.offsetHeight - 8, y));
+      popEl.style.left = x + 'px'; popEl.style.top = y + 'px';
+    });
+    r.addEventListener('mouseleave', () => { alive = false; popEl.style.opacity = 0;
+      setTimeout(() => { if (!alive && raf) { cancelAnimationFrame(raf); raf = null; } }, 200); });
+  });
+}
+</script>
+
+<script type="text/plain" id="src-field">
+/* Flow-field background. Curl-ish noise + cursor force.
+   createFlowField(container, { count=2400, palette=[[r,g,b],...] }) */
+function createFlowField(container, opts = {}) {
+  const count = opts.count ?? 2400;
+  let palette = opts.palette || [[255,107,61],[183,140,255],[77,208,255]];
+  const DPR = Math.min(2, devicePixelRatio || 1);
+  const canvas = document.createElement('canvas');
+  Object.assign(canvas.style, { position: 'absolute', inset: 0, width: '100%', height: '100%' });
+  container.style.position = container.style.position || 'relative';
+  container.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function size() { const r = container.getBoundingClientRect(); W = canvas.width = r.width * DPR; H = canvas.height = r.height * DPR; }
+  size(); addEventListener('resize', size);
+
+  const ps = [];
+  const rand = (a, b) => a + Math.random() * (b - a);
+  for (let i = 0; i < count; i++)
+    ps.push({ x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
+      sp: rand(.4, 1.4), size: rand(.5, 2) * DPR, c: palette[(Math.random() * palette.length) | 0], life: Math.random() });
+
+  const m = { x: -9999, y: -9999, down: false };
+  const rel = e => { const r = container.getBoundingClientRect(); m.x = (e.clientX - r.left) * DPR; m.y = (e.clientY - r.top) * DPR; };
+  container.addEventListener('mousemove', rel);
+  container.addEventListener('mousedown', () => m.down = true);
+  addEventListener('mouseup', () => m.down = false);
+
+  let t = 0;
+  function flow(x, y) {
+    const s = .0016;
+    const a = Math.sin(x * s + t * 6e-4) + Math.cos(y * s * 1.3 - t * 5e-4);
+    const b = Math.cos(x * s * .8 - t * 4e-4) + Math.sin(y * s - t * 7e-4);
+    return Math.atan2(b, a);
+  }
+  (function tick() {
+    t++;
+    ctx.fillStyle = 'rgba(7,7,10,0.14)'; ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'lighter';
+    const R = 150 * DPR;
+    for (const p of ps) {
+      const ang = flow(p.x, p.y);
+      p.vx += Math.cos(ang) * .06 * p.sp; p.vy += Math.sin(ang) * .06 * p.sp;
+      const dx = p.x - m.x, dy = p.y - m.y, d2 = dx * dx + dy * dy;
+      if (d2 < R * R) { const d = Math.sqrt(d2) || 1, f = (1 - d / R) * (m.down ? -2.4 : 1.8); p.vx += dx / d * f; p.vy += dy / d * f; }
+      p.vx *= .94; p.vy *= .94; p.x += p.vx; p.y += p.vy; p.life -= .0016;
+      if (p.x < 0) p.x += W; if (p.x > W) p.x -= W; if (p.y < 0) p.y += H; if (p.y > H) p.y -= H;
+      if (p.life <= 0) { p.life = 1; p.x = Math.random() * W; p.y = Math.random() * H; p.c = palette[(Math.random() * palette.length) | 0]; }
+      const sp = Math.min(1, Math.hypot(p.vx, p.vy) / 3);
+      ctx.fillStyle = `rgba(${p.c[0]},${p.c[1]},${p.c[2]},${(.12 + sp * .5) * Math.min(1, p.life * 1.5)})`;
+      ctx.fillRect(p.x, p.y, p.size, p.size);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    requestAnimationFrame(tick);
+  })();
+  return { setPalette: pal => palette = pal };
+}
+</script>
+
+<!-- ===== runner: display sources + run live demos ===== -->
+<script>
+  // 1) Make each source live (indirect eval → globals) and render the text.
+  const SRC = { trail: 'src-trail', hover: 'src-hover', field: 'src-field' };
+  const code = {};
+  for (const k in SRC) {
+    code[k] = document.getElementById(SRC[k]).textContent.trim();
+    (0, eval)(code[k]); // define the factory globally
+  }
+  document.querySelectorAll('code.render').forEach(el => { el.textContent = code[el.dataset.for]; });
+
+  // 2) Copy buttons
+  document.querySelectorAll('.snippet').forEach(sec => {
+    const btn = sec.querySelector('.copy');
+    const key = sec.querySelector('code.render').dataset.for;
+    btn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(code[key]); } catch (e) {}
+      btn.textContent = 'Copied ✓'; btn.classList.add('done');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1400);
+    });
+  });
+
+  // 3) Wire the live demos
+  createDustTrail({ target: document.querySelector('[data-demo="trail"]'), hue: 30 });
+  createFXHover(document.querySelectorAll('[data-demo="hover"] .fxrow'), document.getElementById('fx-pop'));
+  createFlowField(document.querySelector('[data-demo="field"]'), { count: 1400 });
+</script>
+</body>
+</html>

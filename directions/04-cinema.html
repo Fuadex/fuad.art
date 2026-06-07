@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fuad Soudah — Cinema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #060606;
+    --black-2: #0d0d0e;
+    --fg: #f3f1ec;
+    --fg-2: #9a978f;
+    --fg-3: #5a5852;
+    --rule: rgba(243,241,236,0.1);
+    --gold: #c8a96a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--black); color: var(--fg); }
+  body {
+    font-family: "Inter Tight", system-ui, sans-serif;
+    font-weight: 300;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    letter-spacing: 0.01em;
+  }
+  a { color: inherit; text-decoration: none; }
+  .serif { font-family: "Cormorant Garamond", serif; }
+  .micro { font-size: 10.5px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--fg-3); }
+  .gold { color: var(--gold); }
+
+  /* film grain + vignette overlays */
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 80;
+    background: radial-gradient(ellipse at center, transparent 52%, rgba(0,0,0,0.55) 100%);
+  }
+  #grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 81; opacity: 0.045;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* Nav */
+  .nav {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 34px 56px;
+  }
+  .nav .brand { font-family: "Cormorant Garamond", serif; font-size: 22px; letter-spacing: 0.04em; }
+  .nav .brand b { font-weight: 500; }
+  .nav .links { display: flex; gap: 36px; }
+  .nav .links a { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-2); transition: color .25s; }
+  .nav .links a:hover { color: var(--gold); }
+
+  /* Hero — title card */
+  .hero {
+    height: 900px; position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero canvas { position: absolute; inset: 0; z-index: 0; opacity: 0.5; }
+  .hero .veil { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse at center, transparent 30%, var(--black) 85%); }
+  .hero .content { position: relative; z-index: 2; }
+  .hero .pre { margin-bottom: 30px; }
+  .hero h1 {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 300;
+    font-size: 132px;
+    line-height: 0.96;
+    letter-spacing: 0.01em;
+  }
+  .hero h1 .it { font-style: italic; }
+  .hero .sub {
+    margin-top: 30px;
+    font-size: 15px; letter-spacing: 0.06em;
+    color: var(--fg-2);
+    max-width: 540px;
+    line-height: 1.7;
+  }
+  .hero .scroll {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .hero .scroll .line { width: 1px; height: 40px; background: linear-gradient(var(--gold), transparent); animation: drop 2.4s ease-in-out infinite; }
+  @keyframes drop { 0%,100% { transform: scaleY(0.3); transform-origin: top; opacity: 0.4; } 50% { transform: scaleY(1); opacity: 1; } }
+
+  /* Marquee credits strip */
+  .credits-strip {
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    overflow: hidden; padding: 16px 0;
+    display: flex;
+  }
+  .credits-strip .track { display: inline-flex; gap: 56px; white-space: nowrap; animation: scroll-l 40s linear infinite; padding-right: 56px; }
+  .credits-strip .track span { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 20px; color: var(--fg-3); }
+  .credits-strip .track span b { font-style: normal; font-weight: 400; color: var(--fg-2); }
+  @keyframes scroll-l { to { transform: translateX(-50%); } }
+
+  /* Section heading */
+  .sec-h { padding: 100px 56px 40px; display: flex; align-items: baseline; justify-content: space-between; }
+  .sec-h h2 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 56px; letter-spacing: 0.01em; }
+  .sec-h h2 .it { font-style: italic; }
+
+  /* Films — featured + grid */
+  .films { padding: 0 56px; }
+  .feature {
+    position: relative; aspect-ratio: 2.39/1; overflow: hidden;
+    margin-bottom: 4px;
+    cursor: pointer;
+  }
+  .feature .img { position: absolute; inset: 0; transition: transform 1.4s cubic-bezier(.2,.7,.2,1), filter 1.4s; }
+  .feature:hover .img { transform: scale(1.04); }
+  .feature .grad { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, transparent 100%); }
+  .feature .cap { position: absolute; left: 48px; bottom: 44px; max-width: 560px; }
+  .feature .cap .yr { letter-spacing: 0.32em; }
+  .feature .cap h3 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 64px; line-height: 1; margin: 14px 0 14px; }
+  .feature .cap h3 .it { font-style: italic; }
+  .feature .cap p { font-size: 13px; color: var(--fg-2); letter-spacing: 0.04em; max-width: 440px; line-height: 1.6; }
+  .feature .play {
+    position: absolute; right: 48px; bottom: 44px;
+    width: 64px; height: 64px; border-radius: 50%; border: 1px solid rgba(243,241,236,0.4);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .3s, border-color .3s;
+  }
+  .feature:hover .play { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .card { position: relative; aspect-ratio: 16/10; overflow: hidden; cursor: pointer; }
+  .card .img { position: absolute; inset: 0; transition: transform 1s cubic-bezier(.2,.7,.2,1); filter: grayscale(0.4) brightness(0.7); }
+  .card:hover .img { transform: scale(1.06); filter: grayscale(0) brightness(0.95); }
+  .card .grad { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.85), transparent 60%); }
+  .card .cap { position: absolute; left: 22px; right: 22px; bottom: 20px; }
+  .card .cap .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .card .cap h4 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 28px; line-height: 1.05; }
+  .card .cap h4 .it { font-style: italic; }
+  .card .cap .fx { font-size: 9.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); margin-top: 8px; opacity: 0; transition: opacity .3s; }
+  .card:hover .cap .fx { opacity: 1; }
+  .card .cap .yr { font-size: 11px; color: var(--fg-2); letter-spacing: 0.1em; }
+
+  /* image placeholder fills */
+  .ph { width: 100%; height: 100%; }
+  .ph-motu { background: radial-gradient(circle at 60% 40%, #d98a4a, #2a1408 70%); }
+  .ph-furiosa { background: linear-gradient(160deg, #c89a52 0%, #6b4420 55%, #2a1808 100%); }
+  .ph-toxic { background: linear-gradient(135deg, #1a2e3c, #4a6b88 90%); }
+  .ph-snow { background: linear-gradient(180deg, #46566a, #c8d4e0); }
+  .ph-frontier { background: radial-gradient(circle at 40% 70%, #f0b860, #1a1206 65%); }
+  .ph-m3gan { background: linear-gradient(150deg, #3a2e26, #8a6a4a); }
+  .ph-longing { background: linear-gradient(200deg, #2a1410, #b85a3a 90%); }
+  .ph-bureau { background: linear-gradient(180deg, #2a2826, #b0a89c); }
+  .ph-ticket { background: linear-gradient(180deg, #16303c, #5a96b0); }
+  .ph-thamma { background: linear-gradient(160deg, #2a1d12, #8a5e38); }
+  .ph-skyforce { background: linear-gradient(165deg, #1c2a3a, #5a7a9c 92%); }
+  .ph-paradise { background: linear-gradient(180deg, #16303c, #5a96b0); }
+  .ph-interceptor { background: linear-gradient(150deg, #2a1206, #a8662e 92%); }
+
+  /* Further productions — smaller windows */
+  .films-sub { display: flex; align-items: baseline; justify-content: space-between; padding: 30px 2px 14px; }
+  .grid-sm { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .card-sm { position: relative; aspect-ratio: 5/4; overflow: hidden; cursor: pointer; }
+  .card-sm .img { position: absolute; inset: 0; transition: transform 1s cubic-bezier(.2,.7,.2,1); filter: grayscale(0.55) brightness(0.55); }
+  .card-sm:hover .img { transform: scale(1.06); filter: grayscale(0) brightness(0.9); }
+  .card-sm .grad { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent 66%); }
+  .card-sm .cap { position: absolute; left: 16px; right: 16px; bottom: 15px; }
+  .card-sm .cap h5 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 19px; line-height: 1.02; }
+  .card-sm .cap h5 .it { font-style: italic; }
+  .card-sm .cap .line { display: flex; justify-content: space-between; align-items: baseline; margin-top: 7px; }
+  .card-sm .cap .yr { font-size: 10.5px; color: var(--fg-2); letter-spacing: 0.1em; }
+  .card-sm .cap .st { font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+  .card-sm .cap .fx { font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); margin-top: 8px; opacity: 0; transition: opacity .3s; }
+  .card-sm:hover .cap .fx { opacity: 1; }
+
+  /* About — letterboxed quote */
+  .about {
+    margin: 120px 0 0; padding: 120px 56px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    text-align: center;
+    position: relative;
+  }
+  .about .q {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 300; font-size: 44px; line-height: 1.4;
+    max-width: 980px; margin: 0 auto;
+    letter-spacing: 0.005em;
+  }
+  .about .q .it { font-style: italic; color: var(--gold); }
+  .about .body { max-width: 680px; margin: 40px auto 0; font-size: 15px; line-height: 1.8; color: var(--fg-2); }
+  .about .body em { color: var(--fg); font-style: normal; }
+  .about .edu { margin-top: 36px; display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+  .about .edu span { font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-3); }
+
+  /* CV — credit roll */
+  .cv { padding: 100px 56px; }
+  .cv-roll { max-width: 920px; margin: 0 auto; }
+  .cv-row {
+    display: grid; grid-template-columns: 120px 1fr 1fr; gap: 32px; align-items: baseline;
+    padding: 26px 0; border-top: 1px solid var(--rule);
+    transition: padding-left .3s;
+  }
+  .cv-row:hover { padding-left: 14px; }
+  .cv-row:last-child { border-bottom: 1px solid var(--rule); }
+  .cv-row .yr { font-size: 12px; letter-spacing: 0.18em; color: var(--gold); }
+  .cv-row .role { font-family: "Cormorant Garamond", serif; font-size: 26px; font-weight: 400; }
+  .cv-row .role .it { font-style: italic; }
+  .cv-row .org { font-size: 13px; color: var(--fg-2); letter-spacing: 0.03em; text-align: right; }
+  .cv-row .org.hl { color: var(--gold); }
+  .cv-row .org .exch { color: var(--fg-3); }
+
+  /* Contact — end title */
+  .end {
+    height: 620px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; position: relative;
+  }
+  .end .pre { margin-bottom: 26px; }
+  .end h2 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 96px; line-height: 1; }
+  .end h2 a { border-bottom: 1px solid var(--fg-3); padding-bottom: 6px; transition: border-color .3s; }
+  .end h2 a:hover { border-color: var(--gold); color: var(--gold); }
+  .end .links { margin-top: 48px; display: flex; gap: 40px; }
+  .end .links a { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-2); transition: color .25s; }
+  .end .links a:hover { color: var(--gold); }
+  .end .fin { position: absolute; bottom: 30px; font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 20px; color: var(--fg-3); }
+
+  /* Studio — revealed on hover only */
+  .studio-reveal { font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); opacity: 0; transition: opacity .35s; }
+  .feature:hover .studio-reveal,
+  .card:hover .studio-reveal,
+  .card-sm:hover .studio-reveal { opacity: 1; }
+  .card .cap .studio-reveal { margin-top: 10px; }
+  .card-sm .cap .studio-reveal { margin-top: 8px; font-size: 8.5px; }
+
+  /* Career — secondary exchange line */
+  .cv-row .org .exch2 { display: block; margin-top: 5px; font-size: 11px; letter-spacing: 0.05em; color: var(--fg-3); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1080px) {
+    .nav { padding: 26px 32px; }
+    .sec-h { padding-left: 32px; padding-right: 32px; }
+    .films { padding-left: 32px; padding-right: 32px; }
+    .about { padding-left: 32px; padding-right: 32px; }
+    .cv { padding-left: 32px; padding-right: 32px; }
+    .hero h1 { font-size: clamp(48px, 10vw, 132px); }
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .grid-sm { grid-template-columns: repeat(3, 1fr); }
+    .about .q { font-size: clamp(28px, 4.6vw, 44px); }
+  }
+  @media (max-width: 680px) {
+    body { letter-spacing: 0; }
+    .nav { flex-direction: column; align-items: flex-start; gap: 14px; padding: 20px;
+           background: linear-gradient(180deg, rgba(6,6,6,0.9), transparent); }
+    .nav .links { gap: 14px 20px; flex-wrap: wrap; }
+    .hero { height: auto; min-height: 90vh; padding: 132px 20px 90px; }
+    .hero h1 { font-size: clamp(40px, 13vw, 84px); }
+    .hero .sub { font-size: 14px; }
+    .credits-strip .track span { font-size: 16px; }
+    .sec-h { flex-direction: column; align-items: flex-start; gap: 10px; padding: 64px 20px 28px; }
+    .sec-h h2 { font-size: clamp(34px, 10vw, 56px); }
+    .feature { aspect-ratio: 4/3; }
+    .feature .cap { left: 24px; right: 24px; bottom: 28px; }
+    .feature .cap h3 { font-size: clamp(32px, 10vw, 56px); }
+    .feature .cap p { font-size: 12px; }
+    .feature .play { width: 48px; height: 48px; right: 24px; bottom: 28px; }
+    .grid { grid-template-columns: 1fr; }
+    .grid-sm { grid-template-columns: repeat(2, 1fr); }
+    .about { padding: 72px 20px; }
+    .about .q { font-size: clamp(24px, 6.4vw, 38px); }
+    .about .body { font-size: 14px; }
+    .cv { padding: 72px 20px; }
+    .cv-row { grid-template-columns: 54px 1fr; gap: 6px 16px; }
+    .cv-row .role { font-size: 22px; }
+    .cv-row .org { grid-column: 2; text-align: left; margin-top: 4px; }
+    .end { height: auto; min-height: 72vh; padding: 100px 20px; }
+    .end h2 { font-size: clamp(40px, 12vw, 76px); }
+    .end .links { flex-wrap: wrap; justify-content: center; gap: 16px 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="grain"></div>
+
+<nav class="nav">
+  <div class="brand">Fuad <b>Soudah</b></div>
+  <div class="links">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#cv">Career</a>
+    <a href="#contact">Contact</a>
+    <a href="https://vimeo.com/1130622647" target="_blank" class="gold">Reel</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="hero-c"></canvas>
+  <div class="veil"></div>
+  <div class="content">
+    <div class="micro pre">FX Technical Director — Sydney</div>
+    <h1>Sand, fire &amp; the art<br/>of <span class="it">breaking things</span></h1>
+    <p class="sub">Five years coaxing simulations into feature film. Sandstorms, snowfall, dust, sparks and glass — composed in Houdini, one stubborn solve at a time.</p>
+  </div>
+  <div class="scroll"><div class="micro">Selected work</div><div class="line"></div></div>
+</header>
+
+<div class="credits-strip">
+  <div class="track">
+    <span><b>Mad Max: Furiosa</b> · Sandstorm</span>
+    <span><b>Masters of the Universe</b> · Pyro</span>
+    <span><b>M3GAN</b> · Vellum</span>
+    <span><b>Toxic</b> · RBD &amp; Glass</span>
+    <span><b>Play Dirty</b> · Snowfall</span>
+    <span><b>3000 Years of Longing</b> · Smoke</span>
+    <span><b>The Last Frontier</b> · Sparks</span>
+    <span><b>Thamma</b> · Dust &amp; RBD</span>
+    <span><b>Bureau 749</b> · Volumes</span>
+    <span><b>Sky Force</b> · Atmospherics</span>
+    <span><b>Ticket to Paradise</b> · Water</span>
+    <span><b>Interceptor</b> · Destruction</span>
+    <span><b>Mad Max: Furiosa</b> · Sandstorm</span>
+    <span><b>Masters of the Universe</b> · Pyro</span>
+    <span><b>M3GAN</b> · Vellum</span>
+    <span><b>Toxic</b> · RBD &amp; Glass</span>
+    <span><b>Play Dirty</b> · Snowfall</span>
+    <span><b>3000 Years of Longing</b> · Smoke</span>
+    <span><b>The Last Frontier</b> · Sparks</span>
+    <span><b>Thamma</b> · Dust &amp; RBD</span>
+    <span><b>Bureau 749</b> · Volumes</span>
+    <span><b>Sky Force</b> · Atmospherics</span>
+    <span><b>Ticket to Paradise</b> · Water</span>
+    <span><b>Interceptor</b> · Destruction</span>
+  </div>
+</div>
+
+<div class="sec-h" id="work">
+  <h2>Selected <span class="it">Work</span></h2>
+  <div class="micro">2022 — 2026 · 16 productions</div>
+</div>
+
+<section class="films">
+  <div class="feature">
+    <div class="img"><div class="ph ph-furiosa"></div></div>
+    <div class="grad"></div>
+    <div class="cap">
+      <div class="micro yr gold">2024 · Sandstorm</div>
+      <h3>Mad Max: <span class="it">Furiosa</span></h3>
+      <p>Built the Sandstorm asset on the founding team — ground &amp; sky volumes, sandsnakes, windlips particulates — wedged and rendered across three sequences.</p>
+      <div class="studio-reveal" style="margin-top:14px;">DNEG</div>
+    </div>
+    <div class="play">▶</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="img"><div class="ph ph-motu"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><div class="top"><h4>Masters of the <span class="it">Universe</span></h4><span class="yr">'26</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact dust · particles · magical smoke</div></div>
+    </div>
+    <div class="card">
+      <div class="img"><div class="ph ph-toxic"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><div class="top"><h4><span class="it">Toxic</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Explosive dust · debris RBD · glass</div></div>
+    </div>
+    <div class="card">
+      <div class="img"><div class="ph ph-snow"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><div class="top"><h4>Play <span class="it">Dirty</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Templated snowfall · sparks</div></div>
+    </div>
+    <div class="card">
+      <div class="img"><div class="ph ph-frontier"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><div class="top"><h4>The Last <span class="it">Frontier</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact RBD · pyro dust · sparks</div></div>
+    </div>
+    <div class="card">
+      <div class="img"><div class="ph ph-m3gan"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><div class="top"><h4><span class="it">M3GAN</span></h4><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Vellum cloth · wires · deformer solver</div></div>
+    </div>
+    <div class="card">
+      <div class="img"><div class="ph ph-longing"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><div class="top"><h4>3000 Years of <span class="it">Longing</span></h4><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Sparks · steam · smoke · exhaust</div></div>
+    </div>
+  </div>
+
+  <div class="films-sub">
+    <span class="micro">Further productions</span>
+    <span class="micro">Supporting &amp; element work</span>
+  </div>
+  <div class="grid-sm">
+    <div class="card-sm">
+      <div class="img"><div class="ph ph-thamma"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><h5><span class="it">Thamma</span></h5><div class="line"><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Dust · RBD</div></div>
+    </div>
+    <div class="card-sm">
+      <div class="img"><div class="ph ph-bureau"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><h5>Bureau <span class="it">749</span></h5><div class="line"><span class="yr">'24</span></div><div class="studio-reveal">DNEG</div><div class="fx">Dust · vapour volumes</div></div>
+    </div>
+    <div class="card-sm">
+      <div class="img"><div class="ph ph-skyforce"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><h5>Sky <span class="it">Force</span></h5><div class="line"><span class="yr">'24</span></div><div class="studio-reveal">DNEG</div><div class="fx">Pyro · atmospherics</div></div>
+    </div>
+    <div class="card-sm">
+      <div class="img"><div class="ph ph-paradise"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><h5>Ticket to <span class="it">Paradise</span></h5><div class="line"><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Water ripple RnD</div></div>
+    </div>
+    <div class="card-sm">
+      <div class="img"><div class="ph ph-interceptor"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><h5><span class="it">Interceptor</span></h5><div class="line"><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Destruction · elements</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="micro">About</div>
+  <p class="q" style="margin-top:30px;">A simulation is a stubborn argument with physics —<br/>I spend my days <span class="it">losing it carefully</span>, so that grains, smoke and broken things behave like they belong on a screen the size of a building.</p>
+  <p class="body">I'm an FX Technical Director with five years in Houdini, shaped across <em>DNEG Sydney</em> and <em>Fin Design + Effects</em>. Before VFX, I studied interaction design and creative technology across four continents — <em>Parsons New York, KAIST Korea, Aalto Helsinki and LMU Munich</em>. I template what I'd otherwise build twice, and I'm happiest with my hands in a solver.</p>
+  <div class="edu"><span>Univ. Sydney</span><span>Parsons NYC</span><span>KAIST Korea</span><span>Aalto Helsinki</span><span>LMU München</span><span>Animal Logic Academy</span></div>
+</section>
+
+<section class="cv" id="cv">
+  <div class="sec-h" style="padding: 0 0 40px;"><h2><span class="it">Career</span></h2><div class="micro">Résumé</div></div>
+  <div class="cv-roll">
+    <div class="cv-row"><div class="yr">2025—26</div><div class="role">FX Technical <span class="it">Director</span></div><div class="org hl">DNEG, Sydney</div></div>
+    <div class="cv-row"><div class="yr">2023—25</div><div class="role">Junior FX Technical <span class="it">Director</span></div><div class="org hl">DNEG, Sydney</div></div>
+    <div class="cv-row"><div class="yr">2021—22</div><div class="role">Junior FX <span class="it">Artist</span></div><div class="org hl">Fin Design + Effects, Sydney</div></div>
+    <div class="cv-row"><div class="yr">2020</div><div class="role">Grad. Cert. Animation &amp; <span class="it">Visualisation</span></div><div class="org">Animal Logic Academy · UTS</div></div>
+    <div class="cv-row"><div class="yr">2018—21</div><div class="role">M. Interaction Design &amp; <span class="it">Electronic&nbsp;Arts</span></div><div class="org">University of Sydney <span class="exch">· exch. Parsons NYC</span><span class="exch2">Short-term exch. KAIST, Aalto Univ.</span></div></div>
+    <div class="cv-row"><div class="yr">2015—18</div><div class="role">B. Design <span class="it">Computing</span></div><div class="org">Univ. Sydney <span class="exch">· exch. LMU München</span></div></div>
+  </div>
+</section>
+
+<section class="end" id="contact">
+  <div class="micro pre">Now accepting commissions &amp; collaborations</div>
+  <h2>Let's make<br/><a href="mailto:fuadsoudah@gmail.com" class="it">something move.</a></h2>
+  <div class="links">
+    <a href="mailto:fuadsoudah@gmail.com">fuadsoudah@gmail.com</a>
+    <a href="https://vimeo.com/1130622647" target="_blank">Vimeo</a>
+    <a href="https://www.linkedin.com/in/fuad-soudah" target="_blank">LinkedIn</a>
+    <a href="https://www.imdb.com/name/nm13765535" target="_blank">IMDb</a>
+  </div>
+</section>
+
+<script>
+  // Hero: slow drifting embers/dust
+  (function () {
+    const c = document.getElementById('hero-c');
+    const ctx = c.getContext('2d');
+    function size() { c.width = c.offsetWidth; c.height = c.offsetHeight; }
+    size(); window.addEventListener('resize', size);
+    const N = 140, ps = [];
+    for (let i = 0; i < N; i++) ps.push(reset({}, true));
+    function reset(p, init) {
+      p.x = Math.random() * c.width;
+      p.y = init ? Math.random() * c.height : c.height + 10;
+      p.vx = (Math.random() - 0.5) * 0.25;
+      p.vy = -(0.12 + Math.random() * 0.5);
+      p.size = 0.5 + Math.random() * 2.2;
+      p.life = 0.3 + Math.random() * 0.7;
+      p.hue = 28 + Math.random() * 14;
+      return p;
+    }
+    let mx = 0;
+    c.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); mx = (e.clientX - r.left - c.width/2) / c.width; });
+    function draw() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (const p of ps) {
+        p.x += p.vx + mx * 0.6; p.y += p.vy;
+        p.vy *= 0.999;
+        if (p.y < -10) reset(p, false);
+        const fl = 0.5 + 0.5 * Math.sin(Date.now() * 0.004 + p.x);
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 80%, ${55 + fl*15}%, ${p.life * 0.5 * fl})`;
+        ctx.arc(p.x, p.y, p.size, 0, 6.283);
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>fuad.art — directions</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #f0eee9; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  iframe { border: 0; display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+
+<script type="text/babel">
+  const W = 1440, H = 900;
+
+  function Frame({ src, w, h }) {
+    return <iframe src={src} title={src} loading="lazy" style={{ width: w || W, height: h || H, border: 0 }} />;
+  }
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="directions" title="fuad.art — five directions"
+          subtitle="One page, five different commitments. Open any artboard fullscreen.">
+          <DCArtboard id="atelier" label="01 · Atelier" width={W} height={H}>
+            <Frame src="directions/01-atelier.html" />
+          </DCArtboard>
+          <DCArtboard id="node-graph" label="02 · Node Graph" width={W} height={H}>
+            <Frame src="directions/02-node-graph.html" />
+          </DCArtboard>
+          <DCArtboard id="index" label="03 · Index" width={W} height={H}>
+            <Frame src="directions/03-index.html" />
+          </DCArtboard>
+          <DCArtboard id="cinema" label="04 · Cinema" width={W} height={H}>
+            <Frame src="directions/04-cinema.html" />
+          </DCArtboard>
+          <DCArtboard id="field" label="05 · Field" width={W} height={H}>
+            <Frame src="directions/05-field.html" />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="round2" title="Round 2 — built on 04 · Cinema"
+          subtitle="Posters (not reel), richer ticker, smaller-contribution windows, toolchain, Education/Career split, interactive journey map, Résumé. Three takes on how much to include. Open fullscreen and scroll.">
+          <DCArtboard id="reel" label="06 · Reel — the full evolution" width={W} height={1700}>
+            <Frame src="directions/06-reel.html" h={1700} />
+          </DCArtboard>
+          <DCArtboard id="filmstrip" label="07 · Filmstrip — the lean cut" width={W} height={1700}>
+            <Frame src="directions/07-filmstrip.html" h={1700} />
+          </DCArtboard>
+          <DCArtboard id="atlas" label="08 · Atlas — map-forward" width={W} height={1700}>
+            <Frame src="directions/08-atlas.html" h={1700} />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="toolkit" title="Reusable FX toolkit"
+          subtitle="The effects you liked, extracted as drop-in functions: cursor dust trail (01), hover sim previews (03), flow-field background (05). Live demos + copy-paste code.">
+          <DCArtboard id="snippets" label="snippets.html" width={1120} height={1700}>
+            <Frame src="snippets.html" w={1120} h={1700} />
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440, initial-scale=1" />
+<title>Fuad Soudah — Filmstrip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter+Tight:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #060606; --black-2: #0c0c0d; --fg: #f3f1ec; --fg-2: #9a978f; --fg-3: #5a5852;
+    --rule: rgba(243,241,236,0.1); --gold: #c8a96a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--black); color: var(--fg); }
+  body { font-family: "Inter Tight", system-ui, sans-serif; font-weight: 300; width: 1440px; overflow-x: hidden; letter-spacing: 0.01em; }
+  a { color: inherit; text-decoration: none; }
+  .micro { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); }
+  #grain { position: fixed; inset: 0; pointer-events: none; z-index: 81; opacity: 0.04; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 60; display: flex; align-items: center; justify-content: space-between; padding: 24px 48px; }
+  .nav .brand { font-family: "Cormorant Garamond", serif; font-size: 20px; }
+  .nav .brand b { font-weight: 500; }
+  .nav .links { display: flex; gap: 26px; align-items: center; }
+  .nav .links a { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-2); transition: color .25s; }
+  .nav .links a:hover { color: var(--gold); }
+  .nav .links a.resume { border: 1px solid var(--rule); padding: 7px 13px; border-radius: 100px; color: var(--fg); }
+  .nav .links a.resume:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Hero — split: type left, single featured poster right */
+  .hero { height: 720px; display: grid; grid-template-columns: 1fr 380px; gap: 56px; align-items: center; padding: 0 48px; position: relative; overflow: hidden; }
+  .hero canvas { position: absolute; inset: 0; z-index: 0; opacity: 0.4; }
+  .hero .c { position: relative; z-index: 2; }
+  .hero .kick { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .hero .kick .bar { width: 42px; height: 1px; background: var(--fg-3); }
+  .hero h1 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 102px; line-height: 0.94; }
+  .hero h1 .it { font-style: italic; }
+  .hero .sub { margin-top: 26px; font-size: 15px; line-height: 1.7; color: var(--fg-2); max-width: 480px; }
+  .hero .row { margin-top: 34px; display: flex; gap: 14px; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 100px; font-family: "IBM Plex Mono", monospace; font-size: 12px; transition: all .2s; }
+  .btn.primary { background: var(--fg); color: var(--black); font-weight: 500; }
+  .btn.primary:hover { transform: translateY(-2px); }
+  .btn.ghost { border: 1px solid var(--rule); color: var(--fg-2); }
+  .btn.ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .hero .feat { position: relative; z-index: 2; aspect-ratio: 2/3; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: linear-gradient(165deg, #d2a85e 0%, #7a4a22 50%, #2a1606 100%); }
+  .hero .feat .vig { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent 45%); }
+  .hero .feat .slot { position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; color: rgba(255,255,255,0.3); font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .hero .feat .cap { position: absolute; bottom: 16px; left: 16px; right: 16px; }
+  .hero .feat .cap .l { font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--gold); }
+  .hero .feat .cap h3 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 26px; line-height: 1; margin-top: 6px; }
+  .hero .feat .cap h3 .it { font-style: italic; }
+
+  /* Filmstrip — the one big interaction */
+  .strip-sec { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 30px 0 36px; background: var(--black-2); position: relative; }
+  .strip-head { display: flex; align-items: baseline; justify-content: space-between; padding: 0 48px 24px; }
+  .strip-head h2 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 40px; }
+  .strip-head h2 .it { font-style: italic; }
+  .strip-head .hint { display: flex; align-items: center; gap: 10px; }
+  .strip-wrap { overflow: hidden; cursor: grab; }
+  .strip-wrap.drag { cursor: grabbing; }
+  .strip { display: flex; gap: 20px; padding: 0 48px; will-change: transform; }
+  .frame { flex: 0 0 300px; }
+  .frame .pic { position: relative; aspect-ratio: 2/3; border: 1px solid var(--rule); border-radius: 5px; overflow: hidden; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+  .frame:hover .pic { transform: translateY(-8px); }
+  .frame .pic .art { position: absolute; inset: 0; filter: saturate(0.85); transition: filter .5s, transform 1s; }
+  .frame:hover .pic .art { filter: saturate(1.1); transform: scale(1.04); }
+  .frame .pic .vig { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.9) 3%, transparent 45%); }
+  .frame .pic .slot { position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; color: rgba(255,255,255,0.28); font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .frame .pic .num { position: absolute; top: 12px; left: 14px; font-family: "IBM Plex Mono", monospace; font-size: 10px; color: rgba(255,255,255,0.6); }
+  .frame .pic .yr { position: absolute; top: 12px; right: 14px; font-family: "IBM Plex Mono", monospace; font-size: 10px; color: rgba(255,255,255,0.6); }
+  .frame .info { padding: 16px 4px 0; }
+  .frame .info h3 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 24px; line-height: 1; }
+  .frame .info h3 .it { font-style: italic; }
+  .frame .info .meta { display: flex; justify-content: space-between; margin-top: 8px; }
+  .frame .info .studio { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); }
+  .frame .info .fx { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--gold); letter-spacing: 0.04em; }
+  /* progress rail */
+  .rail { margin: 30px 48px 0; height: 2px; background: var(--rule); border-radius: 2px; position: relative; }
+  .rail i { position: absolute; top: 0; left: 0; height: 100%; background: var(--gold); border-radius: 2px; width: 22%; }
+
+  /* art fills */
+  .a-furiosa { background: linear-gradient(165deg, #d2a85e, #7a4a22 50%, #2a1606); }
+  .a-motu { background: radial-gradient(circle at 50% 32%, #e09a52, #3a1c0a 72%); }
+  .a-toxic { background: linear-gradient(150deg, #16303e, #3f6f8c 88%); }
+  .a-m3gan { background: linear-gradient(150deg, #2e2620, #7c5e44); }
+  .a-playdirty { background: linear-gradient(180deg, #3c4a5a, #aebccb); }
+  .a-frontier { background: radial-gradient(circle at 42% 66%, #f3bf66, #1a1206 64%); }
+  .a-longing { background: linear-gradient(200deg, #2a1410, #c0603c 92%); }
+  .a-thamma { background: linear-gradient(160deg, #2a1d12, #8a5e38); }
+  .a-bureau { background: linear-gradient(180deg, #24221f, #9a9088); }
+
+  /* condensed: about + tools + trajectory + contact */
+  .slab { padding: 90px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .slab .q { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 38px; line-height: 1.34; }
+  .slab .q .it { font-style: italic; color: var(--gold); }
+  .slab p { font-size: 15px; line-height: 1.8; color: var(--fg-2); margin-bottom: 16px; }
+  .slab p em { color: var(--fg); font-style: normal; }
+
+  .tools-line { padding: 0 48px 90px; }
+  .tools-line .lab { margin-bottom: 20px; }
+  .tools-line .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tools-line .tags span { font-size: 16px; padding: 10px 18px; border: 1px solid var(--rule); border-radius: 100px; transition: border-color .2s, color .2s; }
+  .tools-line .tags span:hover { border-color: var(--gold); color: var(--gold); }
+  .tools-line .tags span b { font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); font-weight: 400; margin-left: 8px; }
+
+  /* trajectory as a clean horizontal text line */
+  .traj { padding: 0 48px 90px; }
+  .traj .lab { margin-bottom: 22px; }
+  .traj-line { display: flex; align-items: stretch; border-top: 1px solid var(--rule); }
+  .traj-step { flex: 1; padding: 22px 20px 22px 0; border-right: 1px solid var(--rule); position: relative; }
+  .traj-step:last-child { border-right: 0; }
+  .traj-step::before { content: ""; position: absolute; top: -4px; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+  .traj-step.study::before { background: var(--fg); }
+  .traj-step.work::before { background: #4dd0ff; }
+  .traj-step .place { font-family: "Cormorant Garamond", serif; font-size: 22px; padding-left: 16px; }
+  .traj-step .place .it { font-style: italic; }
+  .traj-step .what { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.06em; color: var(--fg-3); padding-left: 16px; margin-top: 6px; text-transform: uppercase; }
+
+  .end { padding: 100px 48px; border-top: 1px solid var(--rule); text-align: center; }
+  .end .micro { margin-bottom: 22px; }
+  .end h2 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 80px; line-height: 1; }
+  .end h2 a { font-style: italic; border-bottom: 1px solid var(--fg-3); padding-bottom: 6px; }
+  .end h2 a:hover { color: var(--gold); border-color: var(--gold); }
+  .end .links { margin-top: 42px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .end .links a { font-family: "IBM Plex Mono", monospace; font-size: 12px; padding: 11px 20px; border: 1px solid var(--rule); border-radius: 100px; color: var(--fg-2); transition: all .2s; }
+  .end .links a:hover { border-color: var(--gold); color: var(--fg); transform: translateY(-2px); }
+  .footer { padding: 24px 48px; display: flex; justify-content: space-between; border-top: 1px solid var(--rule); }
+</style>
+</head>
+<body>
+<div id="grain"></div>
+
+<nav class="nav">
+  <div class="brand">Fuad <b>Soudah</b></div>
+  <div class="links">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a class="resume" href="#">Résumé ↓</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="hero-c"></canvas>
+  <div class="c">
+    <div class="kick"><span class="bar"></span><span class="micro">FX Technical Director · Houdini · Sydney</span></div>
+    <h1>I simulate the<br/>things that <span class="it">refuse<br/>to hold still.</span></h1>
+    <p class="sub">Fuad Soudah — five years in Houdini making sandstorms, snowfall, breaking glass, dust, fire and sparks for feature film. Currently at DNEG.</p>
+    <div class="row">
+      <a class="btn primary" href="#work">Browse the filmstrip →</a>
+      <a class="btn ghost" href="#">Résumé ↓</a>
+    </div>
+  </div>
+  <div class="feat">
+    <div class="slot">Featured poster</div>
+    <div class="vig"></div>
+    <div class="cap"><div class="l">2024 · DNEG · SANDSTORM</div><h3>Mad Max: <span class="it">Furiosa</span></h3></div>
+  </div>
+</header>
+
+<section class="strip-sec" id="work">
+  <div class="strip-head">
+    <h2>Selected <span class="it">filmography</span></h2>
+    <div class="hint"><span class="micro">drag · scroll to scrub</span></div>
+  </div>
+  <div class="strip-wrap" id="stripWrap">
+    <div class="strip" id="strip">
+      <div class="frame"><div class="pic"><div class="art a-furiosa"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">01</span><span class="yr">2024</span></div><div class="info"><h3>Mad Max: <span class="it">Furiosa</span></h3><div class="meta"><span class="studio">DNEG Sydney</span><span class="fx">Sandstorm</span></div></div></div>
+      <div class="frame"><div class="pic"><div class="art a-motu"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">02</span><span class="yr">2026</span></div><div class="info"><h3>Masters of the <span class="it">Universe</span></h3><div class="meta"><span class="studio">DNEG Sydney</span><span class="fx">Pyro · dust</span></div></div></div>
+      <div class="frame"><div class="pic"><div class="art a-toxic"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">03</span><span class="yr">2025</span></div><div class="info"><h3><span class="it">Toxic</span></h3><div class="meta"><span class="studio">DNEG Sydney</span><span class="fx">RBD · glass</span></div></div></div>
+      <div class="frame"><div class="pic"><div class="art a-m3gan"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">04</span><span class="yr">2022</span></div><div class="info"><h3><span class="it">M3GAN</span></h3><div class="meta"><span class="studio">Fin D+E</span><span class="fx">Vellum</span></div></div></div>
+      <div class="frame"><div class="pic"><div class="art a-playdirty"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">05</span><span class="yr">2025</span></div><div class="info"><h3>Play <span class="it">Dirty</span></h3><div class="meta"><span class="studio">DNEG Sydney</span><span class="fx">Snowfall</span></div></div></div>
+      <div class="frame"><div class="pic"><div class="art a-frontier"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">06</span><span class="yr">2025</span></div><div class="info"><h3>The Last <span class="it">Frontier</span></h3><div class="meta"><span class="studio">DNEG Sydney</span><span class="fx">Sparks · RBD</span></div></div></div>
+      <div class="frame"><div class="pic"><div class="art a-longing"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">07</span><span class="yr">2022</span></div><div class="info"><h3>3000 Years of <span class="it">Longing</span></h3><div class="meta"><span class="studio">Fin D+E</span><span class="fx">Smoke · sparks</span></div></div></div>
+      <div class="frame"><div class="pic"><div class="art a-thamma"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">08</span><span class="yr">2025</span></div><div class="info"><h3><span class="it">Thamma</span></h3><div class="meta"><span class="studio">DNEG Sydney</span><span class="fx">Dust · RBD</span></div></div></div>
+      <div class="frame"><div class="pic"><div class="art a-bureau"></div><div class="vig"></div><div class="slot">Poster</div><span class="num">09</span><span class="yr">2024</span></div><div class="info"><h3>Bureau <span class="it">749</span></h3><div class="meta"><span class="studio">DNEG Vancouver</span><span class="fx">Volumes</span></div></div></div>
+    </div>
+  </div>
+  <div class="rail"><i id="railFill"></i></div>
+</section>
+
+<section class="slab" id="about">
+  <p class="q">A simulation is a stubborn argument with physics — I spend my days <span class="it">losing it carefully.</span></p>
+  <div>
+    <p>I'm an FX Technical Director with five years in Houdini, currently at <em>DNEG Sydney</em>; previously Fin Design + Effects. I make the destruction and the weather for feature film.</p>
+    <p>Before VFX, I studied interaction design and creative technology across four continents — <em>Parsons, USyd, LMU Munich, KAIST and Aalto</em> — which is why I'd rather template an effect than build it twice.</p>
+  </div>
+</section>
+
+<section class="tools-line">
+  <div class="micro lab">Production toolchain</div>
+  <div class="tags">
+    <span>Houdini <b>Sim · VEX</b></span>
+    <span>Nuke <b>Comp</b></span>
+    <span>RenderMan <b>Render</b></span>
+    <span>Redshift <b>Render</b></span>
+    <span>Karma <b>Render</b></span>
+    <span>Mantra <b>Render</b></span>
+  </div>
+</section>
+
+<section class="traj">
+  <div class="micro lab">Trajectory — born Poland, based Sydney</div>
+  <div class="traj-line">
+    <div class="traj-step"><div class="place">Poland → <span class="it">Sydney</span></div><div class="what">Origin · home base</div></div>
+    <div class="traj-step study"><div class="place">Parsons · <span class="it">LMU</span></div><div class="what">NYC · Munich · study</div></div>
+    <div class="traj-step study"><div class="place">KAIST · <span class="it">Aalto</span></div><div class="what">Korea · Finland · exch.</div></div>
+    <div class="traj-step work"><div class="place">Fin · <span class="it">DNEG</span></div><div class="what">Sydney · Van · Mumbai</div></div>
+  </div>
+</section>
+
+<section class="end" id="contact">
+  <div class="micro">Open to FX TD roles, commissions &amp; collaborations</div>
+  <h2>Let's make <a href="mailto:hello@fuad.art">something move.</a></h2>
+  <div class="links">
+    <a href="mailto:hello@fuad.art">hello@fuad.art</a>
+    <a href="#">Résumé (PDF)</a>
+    <a href="https://vimeo.com/1130622647" target="_blank">Vimeo</a>
+    <a href="https://www.linkedin.com/in/fuad-soudah" target="_blank">LinkedIn</a>
+    <a href="https://www.imdb.com/name/nm13765535" target="_blank">IMDb</a>
+  </div>
+</section>
+<div class="footer"><span class="micro">© 2026 Fuad Soudah</span><span class="micro">The lean cut · Cormorant Garamond · Inter Tight</span></div>
+
+<script>
+  // Hero embers
+  (function () {
+    const c = document.getElementById('hero-c'); const ctx = c.getContext('2d');
+    function size() { c.width = c.offsetWidth; c.height = c.offsetHeight; } size(); addEventListener('resize', size);
+    const ps = [];
+    function reset(p, init) { p.x = Math.random() * c.width; p.y = init ? Math.random() * c.height : c.height + 10; p.vx = (Math.random() - .5) * .25; p.vy = -(.12 + Math.random() * .5); p.size = .5 + Math.random() * 2; p.life = .3 + Math.random() * .7; p.hue = 28 + Math.random() * 14; return p; }
+    for (let i = 0; i < 110; i++) ps.push(reset({}, true));
+    let mx = 0; c.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); mx = (e.clientX - r.left - c.width / 2) / c.width; });
+    (function draw() { ctx.clearRect(0, 0, c.width, c.height); for (const p of ps) { p.x += p.vx + mx * .6; p.y += p.vy; if (p.y < -10) reset(p, false); const fl = .5 + .5 * Math.sin(Date.now() * .004 + p.x); ctx.beginPath(); ctx.fillStyle = `hsla(${p.hue},80%,${55 + fl * 15}%,${p.life * .5 * fl})`; ctx.arc(p.x, p.y, p.size, 0, 6.283); ctx.fill(); } requestAnimationFrame(draw); })();
+  })();
+
+  // Filmstrip horizontal scrub (wheel + drag) with rubber clamp
+  (function () {
+    const wrap = document.getElementById('stripWrap');
+    const strip = document.getElementById('strip');
+    const fill = document.getElementById('railFill');
+    let x = 0, target = 0;
+    function maxScroll() { return Math.max(0, strip.scrollWidth - wrap.clientWidth); }
+    function clamp(v) { return Math.max(0, Math.min(maxScroll(), v)); }
+
+    wrap.addEventListener('wheel', e => {
+      const dom = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      target = clamp(target + dom);
+      e.preventDefault();
+    }, { passive: false });
+
+    let down = false, sx = 0, st = 0;
+    wrap.addEventListener('mousedown', e => { down = true; sx = e.clientX; st = target; wrap.classList.add('drag'); });
+    addEventListener('mousemove', e => { if (!down) return; target = clamp(st - (e.clientX - sx)); });
+    addEventListener('mouseup', () => { down = false; wrap.classList.remove('drag'); });
+
+    (function loop() {
+      x += (target - x) * 0.12;
+      strip.style.transform = `translateX(${-x}px)`;
+      const m = maxScroll();
+      fill.style.width = (m ? Math.max(8, (wrap.clientWidth / strip.scrollWidth) * 100) : 100) + '%';
+      fill.style.left = (m ? (x / m) * (100 - parseFloat(fill.style.width)) : 0) + '%';
+      requestAnimationFrame(loop);
+    })();
+  })();
+</script>
+</body>
+</html>

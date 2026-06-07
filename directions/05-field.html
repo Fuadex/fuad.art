@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440, initial-scale=1" />
+<title>Fuad Soudah — Field</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07070a;
+    --bg-2: #0c0d12;
+    --fg: #eceaf2;
+    --fg-2: #9d9bb0;
+    --fg-3: #565468;
+    --rule: rgba(236,234,242,0.08);
+    --a1: #ff6b3d; /* fire/sand */
+    --a2: #4dd0ff; /* glass/water */
+    --a3: #b78cff; /* generative */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); }
+  body {
+    font-family: "Sora", system-ui, sans-serif;
+    font-weight: 300;
+    width: 1440px;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: "IBM Plex Mono", monospace; }
+  .micro { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); }
+
+  /* The simulation lives behind everything */
+  #field { position: fixed; inset: 0; z-index: 0; }
+  .scrim { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse 80% 60% at 50% 35%, transparent, rgba(7,7,10,0.4) 75%, var(--bg)); }
+  .page { position: relative; z-index: 2; }
+
+  /* Top HUD */
+  .hud {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 26px 44px;
+    backdrop-filter: blur(2px);
+  }
+  .hud .brand { display: flex; align-items: center; gap: 12px; }
+  .hud .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--a1); box-shadow: 0 0 12px var(--a1); }
+  .hud .brand .name { font-size: 15px; font-weight: 500; letter-spacing: 0.02em; }
+  .hud .brand .name b { font-weight: 300; color: var(--fg-2); }
+  .hud nav { display: flex; gap: 30px; }
+  .hud nav a { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--fg-2); transition: color .2s; }
+  .hud nav a:hover { color: var(--fg); }
+  .hud .readout { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--fg-3); text-align: right; line-height: 1.5; }
+  .hud .readout b { color: var(--a2); }
+
+  /* Hero */
+  .hero {
+    height: 900px; display: flex; flex-direction: column; justify-content: center;
+    padding: 0 44px;
+  }
+  .hero .kicker { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .hero .kicker .bar { width: 40px; height: 1px; background: var(--fg-3); }
+  .hero h1 {
+    font-weight: 200;
+    font-size: 104px;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    max-width: 1100px;
+  }
+  .hero h1 b { font-weight: 500; }
+  .hero h1 .grad {
+    background: linear-gradient(100deg, var(--a1), var(--a3) 50%, var(--a2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-weight: 400; font-style: italic;
+  }
+  .hero .sub {
+    margin-top: 34px; max-width: 600px;
+    font-size: 17px; line-height: 1.6; color: var(--fg-2); font-weight: 300;
+  }
+  .hero .row { margin-top: 44px; display: flex; align-items: center; gap: 20px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 13px 22px; border-radius: 100px;
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.04em;
+    transition: transform .2s, background .2s, border-color .2s;
+  }
+  .btn.primary { background: var(--fg); color: var(--bg); font-weight: 500; }
+  .btn.primary:hover { transform: translateY(-2px); }
+  .btn.ghost { border: 1px solid var(--rule); color: var(--fg-2); }
+  .btn.ghost:hover { border-color: var(--fg-2); color: var(--fg); }
+  .hero .hint { position: absolute; bottom: 36px; left: 44px; }
+  .hero .hint .micro { color: var(--fg-3); display: flex; align-items: center; gap: 10px; }
+  .hero .hint .blip { width: 6px; height: 6px; border-radius: 50%; background: var(--a3); animation: blip 1.6s ease-in-out infinite; }
+  @keyframes blip { 0%,100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 8px var(--a3); } }
+
+  /* Section scaffold — sits on a slightly opaque card so text stays legible over sim */
+  .section { padding: 90px 44px; }
+  .panel {
+    background: linear-gradient(180deg, rgba(12,13,18,0.78), rgba(12,13,18,0.9));
+    border: 1px solid var(--rule);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+  }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; padding: 28px 32px; border-bottom: 1px solid var(--rule); }
+  .sec-head h2 { font-size: 30px; font-weight: 400; letter-spacing: -0.01em; }
+  .sec-head h2 b { color: var(--fg-2); font-weight: 200; }
+  .sec-head .idx { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--fg-3); }
+
+  /* Works — interactive list; hovering steers the field */
+  .works-list { display: flex; flex-direction: column; }
+  .work {
+    display: grid; grid-template-columns: 56px 1fr 200px 110px 70px; gap: 20px; align-items: center;
+    padding: 22px 32px;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer; position: relative;
+    transition: background .25s;
+  }
+  .work:last-child { border-bottom: 0; }
+  .work::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: var(--accent, var(--a1)); transform: scaleY(0); transform-origin: center;
+    transition: transform .3s;
+  }
+  .work:hover { background: rgba(255,255,255,0.025); }
+  .work:hover::before { transform: scaleY(1); }
+  .work .no { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--fg-3); }
+  .work:hover .no { color: var(--accent, var(--a1)); }
+  .work .title { font-size: 24px; font-weight: 400; letter-spacing: -0.01em; }
+  .work .desc { font-size: 12px; color: var(--fg-3); margin-top: 3px; font-family: "IBM Plex Mono", monospace; }
+  .work .studio { font-size: 13px; color: var(--fg-2); }
+  .work .tag {
+    justify-self: start;
+    font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 5px 11px; border-radius: 100px; border: 1px solid var(--rule); color: var(--fg-2);
+  }
+  .work:hover .tag { border-color: var(--accent, var(--a1)); color: var(--accent, var(--a1)); }
+  .work .yr { font-family: "IBM Plex Mono", monospace; font-size: 14px; color: var(--fg-2); text-align: right; }
+
+  /* About */
+  .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 0; }
+  .about-grid > div { padding: 36px 32px; }
+  .about-grid > div:first-child { border-right: 1px solid var(--rule); }
+  .about-grid h3 { font-size: 30px; font-weight: 300; line-height: 1.35; letter-spacing: -0.01em; margin-bottom: 22px; }
+  .about-grid h3 .grad { background: linear-gradient(100deg, var(--a1), var(--a3)); -webkit-background-clip: text; background-clip: text; color: transparent; font-style: italic; font-weight: 400; }
+  .about-grid p { font-size: 15px; line-height: 1.7; color: var(--fg-2); margin-bottom: 16px; text-wrap: pretty; }
+  .about-grid p em { color: var(--fg); font-style: normal; }
+  .stat { display: flex; flex-direction: column; gap: 4px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+  .stat:last-child { border-bottom: 0; }
+  .stat .n { font-size: 34px; font-weight: 300; letter-spacing: -0.02em; }
+  .stat .n b { background: linear-gradient(100deg, var(--a2), var(--a3)); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 500; }
+  .stat .l { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); }
+
+  /* CV */
+  .cv-grid { padding: 14px 32px 28px; }
+  .cv-item {
+    display: grid; grid-template-columns: 110px 1fr 1fr; gap: 24px; align-items: baseline;
+    padding: 18px 0; border-bottom: 1px solid var(--rule);
+    transition: padding-left .25s;
+  }
+  .cv-item:last-child { border-bottom: 0; }
+  .cv-item:hover { padding-left: 12px; }
+  .cv-item .yr { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--a3); }
+  .cv-item .role { font-size: 16px; font-weight: 400; }
+  .cv-item .org { font-size: 13px; color: var(--fg-2); text-align: right; }
+
+  /* Contact */
+  .contact { padding: 110px 44px 90px; text-align: center; }
+  .contact .micro { margin-bottom: 24px; }
+  .contact h2 { font-size: 72px; font-weight: 200; letter-spacing: -0.03em; line-height: 1; }
+  .contact h2 a { font-weight: 400; font-style: italic;
+    background: linear-gradient(100deg, var(--a1), var(--a3) 50%, var(--a2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    border-bottom: 1px solid var(--rule); }
+  .contact .links { margin-top: 44px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .contact .links a { font-family: "IBM Plex Mono", monospace; font-size: 12px; padding: 11px 20px; border: 1px solid var(--rule); border-radius: 100px; color: var(--fg-2); transition: all .2s; }
+  .contact .links a:hover { border-color: var(--a3); color: var(--fg); transform: translateY(-2px); }
+  .footer { padding: 26px 44px; display: flex; justify-content: space-between; border-top: 1px solid var(--rule); }
+</style>
+</head>
+<body>
+
+<canvas id="field"></canvas>
+<div class="scrim"></div>
+
+<div class="hud">
+  <div class="brand">
+    <span class="dot"></span>
+    <span class="name">Fuad Soudah <b>· fuad.art</b></span>
+  </div>
+  <nav>
+    <a href="#work">work</a>
+    <a href="#about">about</a>
+    <a href="#cv">cv</a>
+    <a href="#contact">contact</a>
+    <a href="https://vimeo.com/1130622647" target="_blank">reel ↗</a>
+  </nav>
+  <div class="readout">
+    PARTICLES <b id="rd-count">24,000</b><br/>
+    SOLVER <b>POP · ADVECT</b> · <span id="rd-fps">60</span> FPS
+  </div>
+</div>
+
+<div class="page">
+  <section class="hero">
+    <div class="kicker"><span class="bar"></span><span class="micro">FX Technical Director — Houdini — Sydney</span></div>
+    <h1>I simulate the things that <span class="grad">refuse to hold still</span> — sand, fire, snow &amp; <b>breaking glass.</b></h1>
+    <p class="sub">Five years coaxing 24,000 particles at a time into behaving like cinema. This whole page is a live simulation — move your cursor and push it around.</p>
+    <div class="row">
+      <a class="btn primary" href="#work">View selected work →</a>
+      <a class="btn ghost" href="https://vimeo.com/1130622647" target="_blank">▶ Watch reel</a>
+    </div>
+    <div class="hint"><span class="micro"><span class="blip"></span>move cursor — the field reacts</span></div>
+  </section>
+
+  <section class="section" id="work">
+    <div class="panel">
+      <div class="sec-head"><h2>Selected <b>Work</b></h2><div class="idx">10 / 14 · 2022—26</div></div>
+      <div class="works-list">
+        <div class="work" data-acc="#ff6b3d" data-sim="fire"><div class="no">01</div><div><div class="title">Masters of the Universe</div><div class="desc">impact dust · particles · magical smoke · lookdev</div></div><div class="studio">DNEG Sydney</div><div class="tag">Pyro</div><div class="yr">2026</div></div>
+        <div class="work" data-acc="#4dd0ff" data-sim="glass"><div class="no">02</div><div><div class="title">Toxic</div><div class="desc">explosive dust · debris RBD · trailing fire · glass</div></div><div class="studio">DNEG Sydney</div><div class="tag">RBD</div><div class="yr">2025</div></div>
+        <div class="work" data-acc="#cfe0ff" data-sim="snow"><div class="no">03</div><div><div class="title">Play Dirty</div><div class="desc">templated snowfall asset · snow env · sparks</div></div><div class="studio">DNEG Sydney</div><div class="tag">Snow</div><div class="yr">2025</div></div>
+        <div class="work" data-acc="#ffcf5a" data-sim="spark"><div class="no">04</div><div><div class="title">The Last Frontier</div><div class="desc">impact RBD · particles · pyro dust · sparks</div></div><div class="studio">DNEG Sydney</div><div class="tag">Sparks</div><div class="yr">2025</div></div>
+        <div class="work" data-acc="#caa05a" data-sim="sand"><div class="no">05</div><div><div class="title">Mad Max: Furiosa</div><div class="desc">sandstorm asset · founding team · 3 sequences</div></div><div class="studio">DNEG Sydney</div><div class="tag">Sand</div><div class="yr">2024</div></div>
+        <div class="work" data-acc="#b9a07a" data-sim="dust"><div class="no">06</div><div><div class="title">Thamma</div><div class="desc">dust &amp; RBD simulation passes</div></div><div class="studio">DNEG Sydney</div><div class="tag">Dust</div><div class="yr">2025</div></div>
+        <div class="work" data-acc="#c08cff" data-sim="dust"><div class="no">07</div><div><div class="title">Bureau 749</div><div class="desc">large-scale dust &amp; vapour volumes</div></div><div class="studio">DNEG Vancouver</div><div class="tag">Volume</div><div class="yr">2024</div></div>
+        <div class="work" data-acc="#ff9acb" data-sim="glass"><div class="no">08</div><div><div class="title">M3GAN</div><div class="desc">layered cloth · 100s of wires · custom deformer</div></div><div class="studio">Fin Design + Effects</div><div class="tag">Vellum</div><div class="yr">2022</div></div>
+        <div class="work" data-acc="#ff6b3d" data-sim="fire"><div class="no">09</div><div><div class="title">3000 Years of Longing</div><div class="desc">sparks · steam · smoke · rocket exhaust</div></div><div class="studio">Fin Design + Effects</div><div class="tag">Pyro</div><div class="yr">2022</div></div>
+        <div class="work" data-acc="#4dd0ff" data-sim="water"><div class="no">10</div><div><div class="title">Ticket to Paradise</div><div class="desc">water ripple RnD · flamethrower (Bridge Hollow)</div></div><div class="studio">Fin Design + Effects</div><div class="tag">Water</div><div class="yr">2022</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="panel">
+      <div class="sec-head"><h2><b>About</b></h2><div class="idx">// whoami</div></div>
+      <div class="about-grid">
+        <div>
+          <h3>A simulation is a stubborn argument with physics — I spend my days <span class="grad">losing it carefully.</span></h3>
+          <p>I'm an FX Technical Director with five years in Houdini, currently at <em>DNEG Sydney</em>; previously Fin Design + Effects. I make the destruction and the weather: sandstorms, snowfall, breaking glass, dust, fire and sparks for feature film.</p>
+          <p>Before VFX, I studied interaction design, creative technology and HCI across three continents — <em>Parsons, the University of Sydney, and LMU Munich</em>. That background is why I'd rather build a templated asset than the same effect twice, and why a page like this one is just another solver to me.</p>
+        </div>
+        <div>
+          <div class="stat"><div class="n"><b>5</b> yrs</div><div class="l">In Houdini</div></div>
+          <div class="stat"><div class="n"><b>14</b></div><div class="l">Feature credits</div></div>
+          <div class="stat"><div class="n"><b>3</b></div><div class="l">Continents studied</div></div>
+          <div class="stat"><div class="n">DNEG</div><div class="l">Current · Sydney</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="cv">
+    <div class="panel">
+      <div class="sec-head"><h2>Curriculum <b>Vitae</b></h2><div class="idx">2015 → 2026</div></div>
+      <div class="cv-grid">
+        <div class="cv-item"><div class="yr">2025—26</div><div class="role">FX Technical Director</div><div class="org">DNEG, Sydney</div></div>
+        <div class="cv-item"><div class="yr">2025</div><div class="role">Houdini FX — Freelance</div><div class="org">Commercial · sand heightfield</div></div>
+        <div class="cv-item"><div class="yr">2023—25</div><div class="role">Junior FX Technical Director</div><div class="org">DNEG, Sydney</div></div>
+        <div class="cv-item"><div class="yr">2021—22</div><div class="role">Junior FX Artist</div><div class="org">Fin Design + Effects, Sydney</div></div>
+        <div class="cv-item"><div class="yr">2020</div><div class="role">Grad. Cert. Animation &amp; Visualisation</div><div class="org">Animal Logic Academy · UTS</div></div>
+        <div class="cv-item"><div class="yr">2018—21</div><div class="role">M. Interaction Design &amp; Electronic Arts</div><div class="org">University of Sydney</div></div>
+        <div class="cv-item"><div class="yr">2015—18</div><div class="role">B. Design Computing</div><div class="org">Univ. Sydney · exch. LMU München</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="micro">Open to commissions &amp; collaborations</div>
+    <h2>Let's make something<br/><a href="mailto:hello@fuad.art">move together.</a></h2>
+    <div class="links">
+      <a href="mailto:hello@fuad.art">hello@fuad.art</a>
+      <a href="https://vimeo.com/1130622647" target="_blank">Vimeo reel</a>
+      <a href="https://www.linkedin.com/in/fuad-soudah" target="_blank">LinkedIn</a>
+      <a href="https://www.imdb.com/name/nm13765535" target="_blank">IMDb</a>
+      <a href="#">Instagram</a>
+      <a href="#">CV.pdf</a>
+    </div>
+  </section>
+
+  <div class="footer">
+    <span class="micro">© 2026 Fuad Soudah</span>
+    <span class="micro">Live field · 24k particles · Sora + IBM Plex Mono</span>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const canvas = document.getElementById('field');
+    const ctx = canvas.getContext('2d');
+    let W, H, DPR = Math.min(2, window.devicePixelRatio || 1);
+    function size() {
+      W = canvas.width = innerWidth * DPR;
+      H = canvas.height = innerHeight * DPR;
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+    }
+    size(); window.addEventListener('resize', size);
+
+    // Flow-field particle system
+    const COUNT = 2400;
+    const ps = [];
+    const PAL = [
+      [255,107,61], [255,176,90], [183,140,255], [77,208,255], [207,224,255]
+    ];
+    let palette = [PAL[0], PAL[2], PAL[3]];
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    for (let i = 0; i < COUNT; i++) {
+      ps.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: 0, vy: 0,
+        sp: rand(0.4, 1.4),
+        size: rand(0.5, 2.0) * DPR,
+        c: palette[(Math.random() * palette.length) | 0],
+        life: Math.random()
+      });
+    }
+
+    const mouse = { x: -9999, y: -9999, px: -9999, py: -9999, down: false };
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX * DPR; mouse.y = e.clientY * DPR; });
+    window.addEventListener('mousedown', () => mouse.down = true);
+    window.addEventListener('mouseup', () => mouse.down = false);
+
+    let t = 0;
+    // curl-ish noise via layered sines (cheap, no dependency)
+    function flow(x, y) {
+      const s = 0.0016;
+      const a = Math.sin(x * s + t * 0.0006) + Math.cos(y * s * 1.3 - t * 0.0005);
+      const b = Math.cos(x * s * 0.8 - t * 0.0004) + Math.sin(y * s - t * 0.0007);
+      return Math.atan2(b, a);
+    }
+
+    let frames = 0, lastFps = performance.now();
+    const rdFps = document.getElementById('rd-fps');
+
+    function tick() {
+      t++;
+      // trailing fade
+      ctx.fillStyle = 'rgba(7,7,10,0.14)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+
+      for (const p of ps) {
+        const ang = flow(p.x, p.y);
+        p.vx += Math.cos(ang) * 0.06 * p.sp;
+        p.vy += Math.sin(ang) * 0.06 * p.sp;
+
+        // cursor force
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        const d2 = dx*dx + dy*dy;
+        const R = 150 * DPR;
+        if (d2 < R*R) {
+          const d = Math.sqrt(d2) || 1;
+          const f = (1 - d / R) * (mouse.down ? -2.4 : 1.8);
+          p.vx += (dx / d) * f;
+          p.vy += (dy / d) * f;
+        }
+
+        p.vx *= 0.94; p.vy *= 0.94;
+        p.x += p.vx; p.y += p.vy;
+        p.life -= 0.0016;
+
+        // wrap / respawn
+        if (p.x < 0) p.x += W; if (p.x > W) p.x -= W;
+        if (p.y < 0) p.y += H; if (p.y > H) p.y -= H;
+        if (p.life <= 0) { p.life = 1; p.x = Math.random()*W; p.y = Math.random()*H; p.c = palette[(Math.random()*palette.length)|0]; }
+
+        const sp = Math.min(1, Math.hypot(p.vx, p.vy) / 3);
+        const al = (0.12 + sp * 0.5) * Math.min(1, p.life * 1.5);
+        ctx.fillStyle = `rgba(${p.c[0]},${p.c[1]},${p.c[2]},${al})`;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+
+      frames++;
+      const now = performance.now();
+      if (now - lastFps > 1000) { rdFps.textContent = frames; frames = 0; lastFps = now; }
+
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    // Hovering works recolors the field + drives the accent var
+    const dotEl = document.querySelector('.hud .brand .dot');
+    function hexToRgb(h) { const n = parseInt(h.slice(1), 16); return [(n>>16)&255,(n>>8)&255,n&255]; }
+    document.querySelectorAll('.work').forEach(w => {
+      w.addEventListener('mouseenter', () => {
+        const acc = w.dataset.acc;
+        w.style.setProperty('--accent', acc);
+        const base = hexToRgb(acc);
+        palette = [base, [255,176,90], [183,140,255]];
+        if (dotEl) { dotEl.style.background = acc; dotEl.style.boxShadow = `0 0 12px ${acc}`; }
+        ps.forEach(p => { if (Math.random() < 0.5) p.c = palette[(Math.random()*palette.length)|0]; });
+      });
+      w.style.setProperty('--accent', w.dataset.acc);
+    });
+  })();
+</script>
+</body>
+</html>

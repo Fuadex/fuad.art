@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440, initial-scale=1" />
+<title>Fuad Soudah — Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4f4f1;
+    --ink: #0a0a0a;
+    --ink-2: #3a3a38;
+    --ink-3: #757572;
+    --rule: #0a0a0a;
+    --rule-soft: #cfcfca;
+    --accent: #1f43ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    width: 1440px;
+    overflow-x: hidden;
+  }
+  .mono { font-family: "Space Mono", monospace; }
+  a { color: inherit; text-decoration: none; }
+
+  .wrap { border-left: 1.5px solid var(--rule); border-right: 1.5px solid var(--rule); margin: 0 40px; }
+
+  /* Masthead */
+  .mast {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    border-bottom: 1.5px solid var(--rule);
+  }
+  .mast .cell { border-right: 1px solid var(--rule-soft); padding: 12px 14px; }
+  .mast .cell:last-child { border-right: 0; }
+  .mast .k { font-family: "Space Mono", monospace; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 3px; }
+  .mast .v { font-size: 13px; font-weight: 500; }
+  .mast .v.acc { color: var(--accent); }
+
+  /* Hero band */
+  .hero {
+    position: relative;
+    border-bottom: 1.5px solid var(--rule);
+    padding: 0;
+    overflow: hidden;
+  }
+  .hero-canvas { position: absolute; inset: 0; z-index: 0; }
+  .hero-inner {
+    position: relative; z-index: 2;
+    padding: 40px 28px 30px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+    pointer-events: none;
+  }
+  h1 {
+    font-size: 150px;
+    font-weight: 700;
+    line-height: 0.84;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+  }
+  h1 .thin { font-weight: 300; }
+  .hero-tag {
+    text-align: right;
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 280px;
+  }
+  .hero-tag b { color: var(--accent); }
+  .hero-strip {
+    position: relative; z-index: 2;
+    display: flex;
+    border-top: 1.5px solid var(--rule);
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    background: var(--paper);
+  }
+  .hero-strip > div { padding: 9px 16px; border-right: 1px solid var(--rule-soft); white-space: nowrap; }
+  .hero-strip .marq { flex: 1; overflow: hidden; border-right: 0; position: relative; }
+  .hero-strip .marq-track { display: inline-block; white-space: nowrap; animation: marq 24s linear infinite; padding-left: 100%; }
+  @keyframes marq { to { transform: translateX(-100%); } }
+
+  /* Section label row */
+  .srow {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 14px 28px;
+    border-bottom: 1.5px solid var(--rule);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .srow .l { font-family: "Space Mono", monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .srow .l b { color: #8aa0ff; }
+  .srow .r { font-family: "Space Mono", monospace; font-size: 11px; color: #b8b8b4; }
+
+  /* Works table */
+  .index-tbl { width: 100%; border-collapse: collapse; position: relative; }
+  .index-tbl thead td {
+    font-family: "Space Mono", monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-3); padding: 8px 14px; border-bottom: 1px solid var(--rule-soft);
+  }
+  .index-tbl td { padding: 0 14px; }
+  .index-tbl tbody tr {
+    border-bottom: 1px solid var(--rule-soft);
+    cursor: pointer;
+    transition: background .12s, color .12s;
+  }
+  .index-tbl tbody tr:hover { background: var(--ink); color: var(--paper); }
+  .index-tbl tbody tr:hover .c-no { color: #8aa0ff; }
+  .index-tbl tbody tr:hover .c-fx { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .index-tbl tbody td { padding: 16px 14px; vertical-align: middle; }
+  .c-no { font-family: "Space Mono", monospace; font-size: 12px; color: var(--ink-3); width: 56px; }
+  .c-title { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; width: 38%; }
+  .c-title .sub { font-family: "Space Mono", monospace; font-size: 11px; font-weight: 400; color: var(--ink-3); letter-spacing: 0.04em; margin-top: 2px; }
+  .index-tbl tbody tr:hover .c-title .sub { color: #b8b8b4; }
+  .c-studio { font-family: "Space Mono", monospace; font-size: 12px; }
+  .c-fx {
+    font-family: "Space Mono", monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    border: 1px solid var(--rule); border-radius: 0; padding: 4px 8px; display: inline-block;
+  }
+  .c-year { font-family: "Space Mono", monospace; font-size: 14px; text-align: right; width: 80px; }
+
+  /* Floating sim preview */
+  #sim-pop {
+    position: fixed;
+    width: 240px; height: 150px;
+    border: 1.5px solid var(--ink);
+    background: #0a0a0a;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    box-shadow: 6px 6px 0 var(--accent);
+  }
+  #sim-pop canvas { width: 100%; height: 100%; display: block; }
+  #sim-pop .cap {
+    position: absolute; left: 0; bottom: 0; right: 0;
+    font-family: "Space Mono", monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #fff; padding: 5px 8px; background: linear-gradient(0deg, rgba(0,0,0,0.8), transparent);
+  }
+
+  /* Two-col block: about + cv */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1.5px solid var(--rule); }
+  .duo > .col:first-child { border-right: 1.5px solid var(--rule); }
+  .col-head {
+    font-family: "Space Mono", monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-3); padding: 14px 28px; border-bottom: 1px solid var(--rule-soft);
+  }
+  .about-c { padding: 28px; }
+  .about-c p { font-size: 19px; line-height: 1.42; margin-bottom: 16px; text-wrap: pretty; }
+  .about-c p:first-child { font-size: 24px; font-weight: 500; letter-spacing: -0.01em; }
+  .about-c .big { font-size: 13px; font-family: "Space Mono", monospace; color: var(--ink-3); }
+  .about-c .edu { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .about-c .edu span { font-family: "Space Mono", monospace; font-size: 10.5px; border: 1px solid var(--rule-soft); padding: 4px 8px; }
+
+  .cv-c { padding: 0; }
+  .cv-line {
+    display: grid; grid-template-columns: 96px 1fr; gap: 14px;
+    padding: 13px 28px;
+    border-bottom: 1px solid var(--rule-soft);
+    transition: background .12s;
+  }
+  .cv-line:hover { background: rgba(31,67,255,0.05); }
+  .cv-line .yr { font-family: "Space Mono", monospace; font-size: 11px; color: var(--accent); padding-top: 3px; }
+  .cv-line .role { font-size: 15px; font-weight: 600; }
+  .cv-line .org { font-family: "Space Mono", monospace; font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+
+  /* Contact footer */
+  .foot {
+    background: var(--ink); color: var(--paper);
+    padding: 44px 28px 32px;
+    display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px;
+  }
+  .foot h2 { font-size: 72px; font-weight: 700; letter-spacing: -0.04em; text-transform: uppercase; line-height: 0.9; }
+  .foot h2 a { color: var(--paper); border-bottom: 4px solid var(--accent); }
+  .foot h2 a:hover { color: #8aa0ff; }
+  .foot .links { display: flex; flex-direction: column; gap: 8px; text-align: right; font-family: "Space Mono", monospace; font-size: 13px; }
+  .foot .links a { color: #b8b8b4; }
+  .foot .links a:hover { color: #fff; }
+  .foot .links a::before { content: "[ "; color: var(--accent); }
+  .foot .links a::after { content: " ]"; color: var(--accent); }
+  .colo {
+    background: var(--ink); color: var(--ink-3);
+    border-top: 1px solid #2a2a2a;
+    font-family: "Space Mono", monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 12px 28px;
+    display: flex; justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<div id="sim-pop"><canvas id="sim-canvas" width="240" height="150"></canvas><div class="cap"></div></div>
+
+<div class="wrap">
+
+  <div class="mast">
+    <div class="cell" style="grid-column: span 4;"><div class="k">Name</div><div class="v">Fuad Soudah</div></div>
+    <div class="cell" style="grid-column: span 3;"><div class="k">Discipline</div><div class="v">FX Technical Director</div></div>
+    <div class="cell" style="grid-column: span 2;"><div class="k">Location</div><div class="v">Sydney, AU</div></div>
+    <div class="cell" style="grid-column: span 2;"><div class="k">Status</div><div class="v acc">Available</div></div>
+    <div class="cell" style="grid-column: span 1;"><div class="k">Idx</div><div class="v mono">26</div></div>
+  </div>
+
+  <div class="hero">
+    <canvas class="hero-canvas" id="hero-canvas"></canvas>
+    <div class="hero-inner">
+      <h1>FUAD<br/><span class="thin">SOUDAH</span></h1>
+      <div class="hero-tag">
+        FX Technical Director.<br/>
+        5 yrs in Houdini.<br/>
+        I make <b>sand, fire, dust,<br/>snow &amp; breaking glass</b><br/>
+        for feature film.
+      </div>
+    </div>
+    <div class="hero-strip">
+      <div>EST. SYDNEY</div>
+      <div>14 FEATURE CREDITS</div>
+      <div class="marq"><span class="marq-track">PYRO ·· RBD ·· VELLUM ·· HEIGHTFIELDS ·· PARTICLES ·· VOLUMES ·· FLIP ·· SANDSTORM ·· SNOWFALL ·· GLASS ·· SPARKS ·· DUST ·· SMOKE ·· DEFORMER SOLVERS ·· VEX ·· MANTRA ·· KARMA ·· </span></div>
+      <div style="border-right:0;">2026</div>
+    </div>
+  </div>
+
+  <div class="srow" id="work">
+    <div class="l">§01 — SELECTED <b>WORK</b></div>
+    <div class="r">HOVER ROW FOR SIMULATION PREVIEW →</div>
+  </div>
+
+  <table class="index-tbl">
+    <thead>
+      <tr><td>No.</td><td>Title</td><td>Studio</td><td>FX Type</td><td style="text-align:right;">Year</td></tr>
+    </thead>
+    <tbody>
+      <tr data-fx="fire"><td class="c-no">001</td><td class="c-title">Masters of the Universe<div class="sub">Impact dust · particles · magical smoke · lookdev</div></td><td class="c-studio">DNEG SYD</td><td><span class="c-fx">Pyro</span></td><td class="c-year">2026</td></tr>
+      <tr data-fx="glass"><td class="c-no">002</td><td class="c-title">Toxic<div class="sub">Explosive dust · debris RBD · trailing fire · glass</div></td><td class="c-studio">DNEG SYD</td><td><span class="c-fx">RBD</span></td><td class="c-year">2025</td></tr>
+      <tr data-fx="snow"><td class="c-no">003</td><td class="c-title">Play Dirty<div class="sub">Templated snowfall asset · snow env · sparks</div></td><td class="c-studio">DNEG SYD</td><td><span class="c-fx">Snow</span></td><td class="c-year">2025</td></tr>
+      <tr data-fx="spark"><td class="c-no">004</td><td class="c-title">The Last Frontier<div class="sub">Impact RBD · particles · pyro dust · sparks</div></td><td class="c-studio">DNEG SYD</td><td><span class="c-fx">Sparks</span></td><td class="c-year">2025</td></tr>
+      <tr data-fx="dust"><td class="c-no">005</td><td class="c-title">Thamma<div class="sub">Dust &amp; RBD simulation passes</div></td><td class="c-studio">DNEG SYD</td><td><span class="c-fx">Dust</span></td><td class="c-year">2025</td></tr>
+      <tr data-fx="sand"><td class="c-no">006</td><td class="c-title">Mad Max: Furiosa<div class="sub">Sandstorm asset · founding team · 3 sequences</div></td><td class="c-studio">DNEG SYD</td><td><span class="c-fx">Sand</span></td><td class="c-year">2024</td></tr>
+      <tr data-fx="dust"><td class="c-no">007</td><td class="c-title">Bureau 749<div class="sub">Large-scale dust &amp; vapour volumes</div></td><td class="c-studio">DNEG VAN</td><td><span class="c-fx">Volume</span></td><td class="c-year">2024</td></tr>
+      <tr data-fx="vellum"><td class="c-no">008</td><td class="c-title">M3GAN<div class="sub">Layered cloth · 100s of wires · custom deformer solver</div></td><td class="c-studio">FIN D+E</td><td><span class="c-fx">Vellum</span></td><td class="c-year">2022</td></tr>
+      <tr data-fx="fire"><td class="c-no">009</td><td class="c-title">3000 Years of Longing<div class="sub">Sparks · steam · smoke · rocket exhaust · magical string</div></td><td class="c-studio">FIN D+E</td><td><span class="c-fx">Pyro</span></td><td class="c-year">2022</td></tr>
+      <tr data-fx="water"><td class="c-no">010</td><td class="c-title">Ticket to Paradise<div class="sub">Water ripple RnD · flamethrower (Bridge Hollow)</div></td><td class="c-studio">FIN D+E</td><td><span class="c-fx">Water</span></td><td class="c-year">2022</td></tr>
+    </tbody>
+  </table>
+
+  <div class="duo">
+    <div class="col">
+      <div class="col-head" id="about">§02 — ABOUT</div>
+      <div class="about-c">
+        <p>A simulation is a stubborn argument with physics. I lose it carefully, on purpose.</p>
+        <p class="big">FX Technical Director with five years in Houdini, currently at DNEG Sydney; previously Fin Design + Effects. I make the destruction and the weather: sandstorms, snowfall, breaking glass, dust, fire, sparks.</p>
+        <p class="big">Before VFX: interaction design, creative technology and HCI across three continents. I template what I'd otherwise build twice, and I'm happiest with my hands in a solver.</p>
+        <div class="edu">
+          <span>PARSONS · NYC</span><span>UNIV. SYDNEY</span><span>LMU MÜNCHEN</span><span>KAIST</span><span>AALTO</span><span>ANIMAL LOGIC ACADEMY</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-head" id="cv">§03 — CURRICULUM VITAE</div>
+      <div class="cv-c">
+        <div class="cv-line"><div class="yr">2025—26</div><div><div class="role">FX Technical Director</div><div class="org">DNEG, Sydney</div></div></div>
+        <div class="cv-line"><div class="yr">2025</div><div><div class="role">Houdini FX — Freelance</div><div class="org">Commercial · sand heightfield · 3 shots</div></div></div>
+        <div class="cv-line"><div class="yr">2023—25</div><div><div class="role">Junior FX Technical Director</div><div class="org">DNEG, Sydney</div></div></div>
+        <div class="cv-line"><div class="yr">2021—22</div><div><div class="role">Junior FX Artist</div><div class="org">Fin Design + Effects, Sydney</div></div></div>
+        <div class="cv-line"><div class="yr">2020</div><div><div class="role">Grad. Cert. Animation &amp; Visualisation</div><div class="org">Animal Logic Academy · UTS</div></div></div>
+        <div class="cv-line"><div class="yr">2018—21</div><div><div class="role">M. Interaction Design &amp; Electronic Arts</div><div class="org">University of Sydney</div></div></div>
+        <div class="cv-line"><div class="yr">2015—18</div><div><div class="role">B. Design Computing</div><div class="org">University of Sydney · exch. LMU München</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot" id="contact">
+    <div>
+      <div class="mono" style="font-size:11px; color:#8aa0ff; letter-spacing:0.12em; margin-bottom:18px;">§04 — CONTACT</div>
+      <h2><a href="mailto:hello@fuad.art">HELLO@<br/>FUAD.ART</a></h2>
+    </div>
+    <div class="links">
+      <a href="https://vimeo.com/1130622647" target="_blank">VIMEO REEL</a>
+      <a href="https://www.linkedin.com/in/fuad-soudah" target="_blank">LINKEDIN</a>
+      <a href="https://www.imdb.com/name/nm13765535" target="_blank">IMDB</a>
+      <a href="#">INSTAGRAM</a>
+      <a href="#">CV.PDF</a>
+    </div>
+  </div>
+  <div class="colo">
+    <span>© 2026 FUAD SOUDAH</span>
+    <span>SET IN SPACE GROTESK + SPACE MONO</span>
+    <span>SYDNEY 33°52′S</span>
+  </div>
+
+</div>
+
+<script>
+  // ---- Hero ambient particle field (sand drifting) ----
+  (function () {
+    const c = document.getElementById('hero-canvas');
+    const ctx = c.getContext('2d');
+    function size() { c.width = c.offsetWidth; c.height = c.offsetHeight; }
+    size(); window.addEventListener('resize', size);
+    const N = 900;
+    const ps = [];
+    for (let i = 0; i < N; i++) ps.push({
+      x: Math.random(), y: Math.random(),
+      s: 0.4 + Math.random() * 1.8,
+      sp: 0.0002 + Math.random() * 0.0009,
+      a: 0.05 + Math.random() * 0.18
+    });
+    let mx = 0.5;
+    c.parentElement.addEventListener('mousemove', e => {
+      const r = c.getBoundingClientRect();
+      mx = (e.clientX - r.left) / r.width;
+    });
+    function draw() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (const p of ps) {
+        p.x += p.sp * (1 + mx * 2);
+        p.y += Math.sin(p.x * 8 + p.y * 4) * 0.0004;
+        if (p.x > 1) { p.x = 0; p.y = Math.random(); }
+        ctx.fillStyle = `rgba(10,10,10,${p.a})`;
+        ctx.fillRect(p.x * c.width, p.y * c.height, p.s, p.s);
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  // ---- Row hover → simulation preview popup ----
+  (function () {
+    const pop = document.getElementById('sim-pop');
+    const canvas = document.getElementById('sim-canvas');
+    const ctx = canvas.getContext('2d');
+    const cap = pop.querySelector('.cap');
+    const W = canvas.width, H = canvas.height;
+    let parts = [], type = 'dust', raf = null, active = false;
+
+    const PAL = {
+      fire:  { bg: '#160a04', cols: ['#ff7a3a','#ffb066','#ffd9a0','#c43a1e'], g: 0.04, up: true,  label: 'PYRO · 1.2M VOXELS' },
+      glass: { bg: '#08121c', cols: ['#9fd0ff','#cfe8ff','#6ab0ff','#ffffff'], g: 0.14, up: false, label: 'RBD GLASS · 4K SHARDS' },
+      snow:  { bg: '#1a2230', cols: ['#ffffff','#dfeaf5','#c8d4e0'],          g: 0.03, up: false, label: 'SNOWFALL · POP NET' },
+      spark: { bg: '#0d0a06', cols: ['#ffd060','#ff9a3a','#fff0c0'],          g: 0.10, up: false, label: 'SPARKS · POP + DRAG' },
+      dust:  { bg: '#161108', cols: ['#b9a07a','#8a7350','#d8c6a4'],          g: 0.01, up: true,  label: 'DUST · SPARSE PYRO' },
+      sand:  { bg: '#1c1206', cols: ['#caa05a','#7a5226','#e0c088'],          g: 0.015,up: true,  label: 'SANDSTORM · HEIGHTFIELD' },
+      vellum:{ bg: '#120e0a', cols: ['#caa', '#977', '#b98'],                 g: 0.06, up: false, label: 'VELLUM · CLOTH + WIRE' },
+      water: { bg: '#06141c', cols: ['#6ab0ff','#a0d8ff','#cfeeff'],          g: 0.12, up: false, label: 'FLIP · 800K PARTICLES' },
+    };
+
+    function seed(t) {
+      type = t;
+      parts = [];
+      const p = PAL[t];
+      for (let i = 0; i < 260; i++) {
+        parts.push({
+          x: Math.random() * W,
+          y: p.up ? H - Math.random() * 30 : -Math.random() * 30,
+          vx: (Math.random() - 0.5) * 1.2,
+          vy: p.up ? -(0.4 + Math.random() * 1.6) : (0.4 + Math.random() * 1.4),
+          life: Math.random(),
+          size: 0.6 + Math.random() * 2.4,
+          col: p.cols[(Math.random() * p.cols.length) | 0]
+        });
+      }
+      cap.textContent = p.label;
+    }
+
+    function frame() {
+      const p = PAL[type];
+      ctx.fillStyle = p.bg;
+      ctx.fillRect(0, 0, W, H);
+      for (const q of parts) {
+        q.x += q.vx; q.y += q.vy;
+        q.vy += p.up ? -p.g * 0.3 : p.g;
+        q.vx *= 0.99;
+        q.life -= 0.006;
+        if (q.life <= 0 || q.y < -10 || q.y > H + 10 || q.x < -10 || q.x > W + 10) {
+          q.x = Math.random() * W;
+          q.y = p.up ? H - Math.random() * 20 : -Math.random() * 20;
+          q.vx = (Math.random() - 0.5) * 1.2;
+          q.vy = p.up ? -(0.4 + Math.random() * 1.6) : (0.4 + Math.random() * 1.4);
+          q.life = 1;
+        }
+        ctx.globalAlpha = Math.max(0, Math.min(1, q.life)) * 0.9;
+        ctx.fillStyle = q.col;
+        if (type === 'glass' || type === 'vellum') {
+          ctx.fillRect(q.x, q.y, q.size * 1.6, q.size * 1.6);
+        } else {
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, q.size, 0, 6.283);
+          ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+      raf = requestAnimationFrame(frame);
+    }
+
+    document.querySelectorAll('.index-tbl tbody tr').forEach(tr => {
+      tr.addEventListener('mouseenter', () => {
+        seed(tr.dataset.fx);
+        active = true;
+        pop.style.opacity = '1';
+        if (!raf) frame();
+      });
+      tr.addEventListener('mousemove', (e) => {
+        let x = e.clientX + 24, y = e.clientY - 75;
+        if (x + 240 > window.innerWidth) x = e.clientX - 264;
+        if (y < 8) y = 8;
+        if (y + 150 > window.innerHeight) y = window.innerHeight - 158;
+        pop.style.left = x + 'px';
+        pop.style.top = y + 'px';
+      });
+      tr.addEventListener('mouseleave', () => {
+        active = false;
+        pop.style.opacity = '0';
+        setTimeout(() => { if (!active && raf) { cancelAnimationFrame(raf); raf = null; } }, 200);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

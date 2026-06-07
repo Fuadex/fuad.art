@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440, initial-scale=1" />
+<title>Fuad Soudah — Reel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter+Tight:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #060606; --black-2: #0c0c0d; --fg: #f3f1ec; --fg-2: #9a978f; --fg-3: #5a5852;
+    --rule: rgba(243,241,236,0.1); --gold: #c8a96a; --blue: #4dd0ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--black); color: var(--fg); }
+  body { font-family: "Inter Tight", system-ui, sans-serif; font-weight: 300; width: 1440px; overflow-x: hidden; letter-spacing: 0.01em; }
+  a { color: inherit; text-decoration: none; }
+  .serif { font-family: "Cormorant Garamond", serif; }
+  .micro { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3); }
+  .gold { color: var(--gold); }
+  #grain { position: fixed; inset: 0; pointer-events: none; z-index: 81; opacity: 0.04; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+
+  /* Nav */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 60; display: flex; align-items: center; justify-content: space-between; padding: 26px 56px; background: linear-gradient(180deg, rgba(6,6,6,0.85), transparent); }
+  .nav .brand { font-family: "Cormorant Garamond", serif; font-size: 21px; letter-spacing: 0.04em; }
+  .nav .brand b { font-weight: 500; }
+  .nav .links { display: flex; gap: 30px; align-items: center; }
+  .nav .links a { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-2); transition: color .25s; }
+  .nav .links a:hover { color: var(--gold); }
+  .nav .links a.resume { border: 1px solid var(--rule); padding: 8px 14px; border-radius: 100px; color: var(--fg); }
+  .nav .links a.resume:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Hero */
+  .hero { min-height: 820px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 56px; overflow: hidden; }
+  .hero canvas { position: absolute; inset: 0; z-index: 0; opacity: 0.45; }
+  .hero .veil { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 70% 60% at 30% 45%, transparent, var(--black) 80%); }
+  .hero .c { position: relative; z-index: 2; max-width: 1040px; }
+  .hero .kick { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+  .hero .kick .bar { width: 42px; height: 1px; background: var(--fg-3); }
+  .hero h1 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 116px; line-height: 0.96; letter-spacing: 0.005em; }
+  .hero h1 .it { font-style: italic; }
+  .hero .sub { margin-top: 30px; font-size: 16px; line-height: 1.7; color: var(--fg-2); max-width: 560px; }
+  .hero .row { margin-top: 38px; display: flex; gap: 16px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 100px; font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.03em; transition: transform .2s, background .2s, border-color .2s, color .2s; }
+  .btn.primary { background: var(--fg); color: var(--black); font-weight: 500; }
+  .btn.primary:hover { transform: translateY(-2px); }
+  .btn.ghost { border: 1px solid var(--rule); color: var(--fg-2); }
+  .btn.ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Ticker — richer, with breakdowns */
+  .ticker { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); overflow: hidden; display: flex; background: var(--black-2); }
+  .ticker .lab { flex-shrink: 0; display: flex; align-items: center; padding: 0 24px; border-right: 1px solid var(--rule); background: var(--black); }
+  .ticker .lab span { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
+  .ticker .vp { overflow: hidden; flex: 1; display: flex; align-items: center; }
+  .ticker .track { display: inline-flex; white-space: nowrap; animation: scroll-l 64s linear infinite; }
+  .ticker .item { display: inline-flex; align-items: baseline; gap: 12px; padding: 16px 36px; border-right: 1px solid var(--rule); }
+  .ticker .item .t { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 19px; color: var(--fg); }
+  .ticker .item .d { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--fg-3); letter-spacing: 0.02em; }
+  .ticker .item .d b { color: var(--gold); font-weight: 400; }
+  @keyframes scroll-l { to { transform: translateX(-50%); } }
+
+  /* Section heads */
+  .sh { display: flex; align-items: baseline; justify-content: space-between; padding: 96px 56px 36px; }
+  .sh h2 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 52px; letter-spacing: 0.005em; }
+  .sh h2 .it { font-style: italic; }
+  .sh .meta { text-align: right; }
+
+  /* Posters grid */
+  .posters { padding: 0 56px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .poster { position: relative; aspect-ratio: 2/3; border-radius: 4px; overflow: hidden; cursor: pointer; border: 1px solid var(--rule); }
+  .poster .art { position: absolute; inset: 0; transition: transform 1s cubic-bezier(.2,.7,.2,1), filter .6s; filter: saturate(0.85); }
+  .poster:hover .art { transform: scale(1.05); filter: saturate(1.1); }
+  .poster .vig { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.92) 4%, rgba(0,0,0,0.1) 42%, rgba(0,0,0,0.5)); }
+  .poster .top { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: start; }
+  .poster .yr { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.14em; color: rgba(255,255,255,0.7); }
+  .poster .studio { font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  .poster .cap { position: absolute; left: 16px; right: 16px; bottom: 16px; }
+  .poster .cap h3 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 26px; line-height: 1; letter-spacing: 0.005em; }
+  .poster .cap h3 .it { font-style: italic; }
+  .poster .fx { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; max-height: 0; overflow: hidden; opacity: 0; transition: max-height .4s, opacity .35s, margin-top .4s; }
+  .poster:hover .fx { max-height: 80px; opacity: 1; }
+  .poster .fx span { font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(200,169,106,0.4); padding: 3px 7px; border-radius: 100px; }
+  .poster .slot { position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); text-align: center; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.28); }
+
+  /* poster placeholder gradients */
+  .a-motu { background: radial-gradient(circle at 50% 32%, #e09a52, #3a1c0a 72%); }
+  .a-furiosa { background: linear-gradient(165deg, #d2a85e 0%, #7a4a22 50%, #2a1606 100%); }
+  .a-toxic { background: linear-gradient(150deg, #16303e, #3f6f8c 88%); }
+  .a-playdirty { background: linear-gradient(180deg, #3c4a5a 0%, #aebccb 100%); }
+  .a-frontier { background: radial-gradient(circle at 42% 66%, #f3bf66, #1a1206 64%); }
+  .a-m3gan { background: linear-gradient(150deg, #2e2620, #7c5e44); }
+  .a-longing { background: linear-gradient(200deg, #2a1410, #c0603c 92%); }
+  .a-thamma { background: linear-gradient(160deg, #2a1d12, #8a5e38); }
+
+  /* Smaller contributions */
+  .more { padding: 0 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .chip { border: 1px solid var(--rule); border-radius: 6px; padding: 20px 22px; transition: border-color .25s, background .25s; cursor: default; }
+  .chip:hover { border-color: rgba(200,169,106,0.5); background: rgba(200,169,106,0.04); }
+  .chip .topline { display: flex; justify-content: space-between; align-items: baseline; }
+  .chip h4 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 24px; }
+  .chip h4 .it { font-style: italic; }
+  .chip .yr { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--fg-3); }
+  .chip .desc { font-size: 13px; color: var(--fg-2); margin-top: 8px; line-height: 1.55; }
+  .chip .studio { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-top: 10px; }
+
+  /* Tools strip */
+  .tools { margin: 96px 0 0; padding: 56px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--black-2); }
+  .tools .lead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 34px; }
+  .tools .lead h3 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 36px; }
+  .tools .lead h3 .it { font-style: italic; }
+  .tools-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; border-left: 1px solid var(--rule); }
+  .tool { border-right: 1px solid var(--rule); padding: 22px 20px; transition: background .25s; }
+  .tool:hover { background: rgba(255,255,255,0.025); }
+  .tool .n { font-size: 22px; font-weight: 400; letter-spacing: -0.01em; }
+  .tool .role { font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); margin-top: 6px; }
+  .tool .bar { margin-top: 16px; height: 2px; background: var(--rule); border-radius: 2px; overflow: hidden; }
+  .tool .bar i { display: block; height: 100%; background: var(--gold); transform-origin: left; transform: scaleX(var(--lvl, 0.8)); }
+
+  /* About + map */
+  .about { padding: 96px 56px 0; }
+  .about-top { display: grid; grid-template-columns: 1.3fr 1fr; gap: 56px; align-items: start; margin-bottom: 70px; }
+  .about-top .q { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 40px; line-height: 1.32; letter-spacing: 0.005em; }
+  .about-top .q .it { font-style: italic; color: var(--gold); }
+  .about-top p { font-size: 15px; line-height: 1.8; color: var(--fg-2); margin-bottom: 16px; }
+  .about-top p em { color: var(--fg); font-style: normal; }
+  .map-shell { border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--black-2); }
+  .map-shell .mh { display: flex; align-items: baseline; justify-content: space-between; padding: 18px 26px; border-bottom: 1px solid var(--rule); }
+  .map-shell .mh h3 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 28px; }
+  .map-shell .mh h3 .it { font-style: italic; }
+  #journey { display: block; }
+
+  /* Experience + Education split */
+  .duo { padding: 80px 56px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+  .col h3 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 34px; margin-bottom: 8px; }
+  .col h3 .it { font-style: italic; }
+  .col .clab { display: block; margin-bottom: 22px; }
+  .tl-row { display: grid; grid-template-columns: 92px 1fr; gap: 18px; padding: 18px 0; border-top: 1px solid var(--rule); transition: padding-left .25s; }
+  .tl-row:hover { padding-left: 10px; }
+  .tl-row .yr { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--gold); padding-top: 4px; }
+  .tl-row .role { font-size: 17px; font-weight: 400; }
+  .tl-row .org { font-size: 13px; color: var(--fg-2); margin-top: 3px; }
+  .tl-row .org .note { color: var(--fg-3); }
+
+  /* Contact */
+  .end { margin-top: 110px; padding: 110px 56px 90px; border-top: 1px solid var(--rule); text-align: center; }
+  .end .micro { margin-bottom: 24px; }
+  .end h2 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 88px; line-height: 1; }
+  .end h2 a { font-style: italic; border-bottom: 1px solid var(--fg-3); padding-bottom: 6px; transition: border-color .3s, color .3s; }
+  .end h2 a:hover { color: var(--gold); border-color: var(--gold); }
+  .end .links { margin-top: 46px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .end .links a { font-family: "IBM Plex Mono", monospace; font-size: 12px; padding: 11px 20px; border: 1px solid var(--rule); border-radius: 100px; color: var(--fg-2); transition: all .2s; }
+  .end .links a:hover { border-color: var(--gold); color: var(--fg); transform: translateY(-2px); }
+  .footer { padding: 24px 56px; display: flex; justify-content: space-between; border-top: 1px solid var(--rule); }
+</style>
+</head>
+<body>
+<div id="grain"></div>
+
+<nav class="nav">
+  <div class="brand">Fuad <b>Soudah</b></div>
+  <div class="links">
+    <a href="#work">Work</a>
+    <a href="#tools">Tools</a>
+    <a href="#about">About</a>
+    <a href="#career">Career</a>
+    <a href="#contact">Contact</a>
+    <a class="resume" href="#">Résumé ↓</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="hero-c"></canvas>
+  <div class="veil"></div>
+  <div class="c">
+    <div class="kick"><span class="bar"></span><span class="micro">FX Technical Director · Houdini · Sydney</span></div>
+    <h1>Sand, fire &amp; the<br/>art of <span class="it">breaking things.</span></h1>
+    <p class="sub">I'm Fuad — an FX TD with five years in Houdini, currently at DNEG. I build the destruction and the weather for feature film: sandstorms, snowfall, breaking glass, dust, fire and sparks.</p>
+    <div class="row">
+      <a class="btn primary" href="#work">View selected work →</a>
+      <a class="btn ghost" href="#">Download résumé ↓</a>
+    </div>
+  </div>
+</header>
+
+<div class="ticker">
+  <div class="lab"><span>FX Breakdown</span></div>
+  <div class="vp"><div class="track" id="tk"></div></div>
+</div>
+
+<div class="sh" id="work">
+  <h2>Selected <span class="it">Work</span></h2>
+  <div class="meta"><div class="micro">Lead &amp; key contributions · hover for breakdown</div></div>
+</div>
+
+<section class="posters">
+  <div class="poster"><div class="art a-furiosa"></div><div class="vig"></div><div class="slot">Poster</div><div class="top"><span class="yr">2024</span><span class="studio">DNEG</span></div><div class="cap"><h3>Mad Max: <span class="it">Furiosa</span></h3><div class="fx"><span>Sandstorm asset</span><span>Volumes</span><span>Particulates</span></div></div></div>
+  <div class="poster"><div class="art a-motu"></div><div class="vig"></div><div class="slot">Poster</div><div class="top"><span class="yr">2026</span><span class="studio">DNEG</span></div><div class="cap"><h3>Masters of the <span class="it">Universe</span></h3><div class="fx"><span>Impact dust</span><span>Particles</span><span>Magical smoke</span><span>Lookdev</span></div></div></div>
+  <div class="poster"><div class="art a-toxic"></div><div class="vig"></div><div class="slot">Poster</div><div class="top"><span class="yr">2025</span><span class="studio">DNEG</span></div><div class="cap"><h3><span class="it">Toxic</span></h3><div class="fx"><span>Explosive dust</span><span>Debris RBD</span><span>Glass</span><span>Trailing fire</span></div></div></div>
+  <div class="poster"><div class="art a-m3gan"></div><div class="vig"></div><div class="slot">Poster</div><div class="top"><span class="yr">2022</span><span class="studio">Fin D+E</span></div><div class="cap"><h3><span class="it">M3GAN</span></h3><div class="fx"><span>Vellum cloth</span><span>Wires &amp; cables</span><span>Custom deformer</span></div></div></div>
+  <div class="poster"><div class="art a-playdirty"></div><div class="vig"></div><div class="slot">Poster</div><div class="top"><span class="yr">2025</span><span class="studio">DNEG</span></div><div class="cap"><h3>Play <span class="it">Dirty</span></h3><div class="fx"><span>Snowfall asset</span><span>Snow env</span><span>Sparks</span></div></div></div>
+  <div class="poster"><div class="art a-frontier"></div><div class="vig"></div><div class="slot">Poster</div><div class="top"><span class="yr">2025</span><span class="studio">DNEG</span></div><div class="cap"><h3>The Last <span class="it">Frontier</span></h3><div class="fx"><span>Impact RBD</span><span>Pyro dust</span><span>Sparks</span></div></div></div>
+  <div class="poster"><div class="art a-longing"></div><div class="vig"></div><div class="slot">Poster</div><div class="top"><span class="yr">2022</span><span class="studio">Fin D+E</span></div><div class="cap"><h3>3000 Years of <span class="it">Longing</span></h3><div class="fx"><span>Sparks</span><span>Steam</span><span>Smoke</span><span>Rocket exhaust</span></div></div></div>
+  <div class="poster"><div class="art a-thamma"></div><div class="vig"></div><div class="slot">Poster</div><div class="top"><span class="yr">2025</span><span class="studio">DNEG</span></div><div class="cap"><h3><span class="it">Thamma</span></h3><div class="fx"><span>Dust</span><span>RBD</span></div></div></div>
+</section>
+
+<div class="sh">
+  <h2>Further <span class="it">contributions</span></h2>
+  <div class="meta"><div class="micro">Smaller &amp; supporting work</div></div>
+</div>
+<section class="more">
+  <div class="chip"><div class="topline"><h4>Bureau <span class="it">749</span></h4><span class="yr">2024</span></div><div class="desc">Large-scale dust &amp; vapour volumes.</div><div class="studio">DNEG Vancouver</div></div>
+  <div class="chip"><div class="topline"><h4>Sky Force <span class="it">/ Fighter</span></h4><span class="yr">2024</span></div><div class="desc">Pyro &amp; atmospherics support.</div><div class="studio">DNEG Mumbai</div></div>
+  <div class="chip"><div class="topline"><h4>Ticket to <span class="it">Paradise</span></h4><span class="yr">2022</span></div><div class="desc">Water ripple RnD.</div><div class="studio">Fin Design + Effects</div></div>
+  <div class="chip"><div class="topline"><h4>The <span class="it">Nevers</span></h4><span class="yr">2022</span></div><div class="desc">Episodic FX support passes.</div><div class="studio">Fin Design + Effects</div></div>
+  <div class="chip"><div class="topline"><h4><span class="it">Interceptor</span></h4><span class="yr">2022</span></div><div class="desc">Destruction &amp; element work.</div><div class="studio">Fin Design + Effects</div></div>
+  <div class="chip"><div class="topline"><h4>Bridge <span class="it">Hollow</span></h4><span class="yr">2022</span></div><div class="desc">Flamethrower simulation.</div><div class="studio">Fin Design + Effects</div></div>
+</section>
+
+<section class="tools" id="tools">
+  <div class="lead">
+    <h3>Production <span class="it">toolchain</span></h3>
+    <div class="micro">Sim · Comp · Render</div>
+  </div>
+  <div class="tools-grid">
+    <div class="tool" style="--lvl:0.97"><div class="n">Houdini</div><div class="role">Simulation · VEX</div><div class="bar"><i></i></div></div>
+    <div class="tool" style="--lvl:0.85"><div class="n">Nuke</div><div class="role">Compositing</div><div class="bar"><i></i></div></div>
+    <div class="tool" style="--lvl:0.8"><div class="n">RenderMan</div><div class="role">Rendering</div><div class="bar"><i></i></div></div>
+    <div class="tool" style="--lvl:0.78"><div class="n">Redshift</div><div class="role">Rendering</div><div class="bar"><i></i></div></div>
+    <div class="tool" style="--lvl:0.82"><div class="n">Karma</div><div class="role">Rendering</div><div class="bar"><i></i></div></div>
+    <div class="tool" style="--lvl:0.85"><div class="n">Mantra</div><div class="role">Rendering</div><div class="bar"><i></i></div></div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="about-top">
+    <p class="q">A simulation is a stubborn argument with physics — I spend my days <span class="it">losing it carefully,</span> so grains, smoke and broken things behave like they belong on a screen the size of a building.</p>
+    <div>
+      <p>I'm an FX Technical Director with five years in Houdini, currently at <em>DNEG Sydney</em>; previously Fin Design + Effects. Before VFX, I studied interaction design, creative technology and HCI — which is why I'd rather template an effect than build it twice.</p>
+      <p>Born in Poland, raised and based in Sydney, with study and work that's taken me across four continents.</p>
+    </div>
+  </div>
+  <div class="map-shell">
+    <div class="mh"><h3>The <span class="it">trajectory</span></h3><div class="micro">Origin · Education · Experience</div></div>
+    <div id="journey"></div>
+  </div>
+</section>
+
+<section class="duo" id="career">
+  <div class="col">
+    <span class="micro clab">Experience</span>
+    <h3><span class="it">Career</span></h3>
+    <div style="margin-top:8px">
+      <div class="tl-row"><div class="yr">2025—26</div><div><div class="role">FX Technical Director</div><div class="org">DNEG, Sydney</div></div></div>
+      <div class="tl-row"><div class="yr">2025</div><div><div class="role">Houdini FX — Freelance</div><div class="org">Commercial <span class="note">· sand heightfield, 3 shots</span></div></div></div>
+      <div class="tl-row"><div class="yr">2023—25</div><div><div class="role">Junior FX Technical Director</div><div class="org">DNEG, Sydney <span class="note">· Furiosa founding team</span></div></div></div>
+      <div class="tl-row"><div class="yr">2021—22</div><div><div class="role">Junior FX Artist</div><div class="org">Fin Design + Effects, Sydney</div></div></div>
+    </div>
+  </div>
+  <div class="col">
+    <span class="micro clab">Education</span>
+    <h3><span class="it">Studied</span></h3>
+    <div style="margin-top:8px">
+      <div class="tl-row"><div class="yr">2020</div><div><div class="role">Grad. Cert. Animation &amp; Visualisation</div><div class="org">Animal Logic Academy · UTS, Sydney</div></div></div>
+      <div class="tl-row"><div class="yr">2018—21</div><div><div class="role">M. Interaction Design &amp; Electronic Arts</div><div class="org">University of Sydney <span class="note">· exch. Parsons NYC</span></div></div></div>
+      <div class="tl-row"><div class="yr">2018</div><div><div class="role">Exchange · Creative Technology</div><div class="org">KAIST, Korea · Aalto, Finland</div></div></div>
+      <div class="tl-row"><div class="yr">2015—18</div><div><div class="role">B. Design Computing</div><div class="org">University of Sydney <span class="note">· exch. LMU München</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="end" id="contact">
+  <div class="micro">Open to FX TD roles, commissions &amp; collaborations</div>
+  <h2>Let's make<br/><a href="mailto:hello@fuad.art">something move.</a></h2>
+  <div class="links">
+    <a href="mailto:hello@fuad.art">hello@fuad.art</a>
+    <a href="#">Résumé (PDF)</a>
+    <a href="https://vimeo.com/1130622647" target="_blank">Vimeo</a>
+    <a href="https://www.linkedin.com/in/fuad-soudah" target="_blank">LinkedIn</a>
+    <a href="https://www.imdb.com/name/nm13765535" target="_blank">IMDb</a>
+  </div>
+</section>
+<div class="footer"><span class="micro">© 2026 Fuad Soudah</span><span class="micro">Cormorant Garamond · Inter Tight · IBM Plex Mono</span></div>
+
+<script src="map.js"></script>
+<script>
+  // Hero embers
+  (function () {
+    const c = document.getElementById('hero-c'); const ctx = c.getContext('2d');
+    function size() { c.width = c.offsetWidth; c.height = c.offsetHeight; } size(); addEventListener('resize', size);
+    const ps = [];
+    function reset(p, init) { p.x = Math.random() * c.width; p.y = init ? Math.random() * c.height : c.height + 10; p.vx = (Math.random() - .5) * .25; p.vy = -(.12 + Math.random() * .5); p.size = .5 + Math.random() * 2.2; p.life = .3 + Math.random() * .7; p.hue = 28 + Math.random() * 14; return p; }
+    for (let i = 0; i < 130; i++) ps.push(reset({}, true));
+    let mx = 0; c.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); mx = (e.clientX - r.left - c.width / 2) / c.width; });
+    (function draw() { ctx.clearRect(0, 0, c.width, c.height); for (const p of ps) { p.x += p.vx + mx * .6; p.y += p.vy; if (p.y < -10) reset(p, false); const fl = .5 + .5 * Math.sin(Date.now() * .004 + p.x); ctx.beginPath(); ctx.fillStyle = `hsla(${p.hue},80%,${55 + fl * 15}%,${p.life * .5 * fl})`; ctx.arc(p.x, p.y, p.size, 0, 6.283); ctx.fill(); } requestAnimationFrame(draw); })();
+  })();
+
+  // Ticker content (doubled for seamless loop)
+  (function () {
+    const items = [
+      ['Mad Max: Furiosa', 'sandstorm — ground &amp; sky <b>volumes</b>, sandsnakes, windlips particulates'],
+      ['Masters of the Universe', 'impact <b>dust</b>, particles, magical smoke, RenderMan lookdev'],
+      ['Toxic', 'explosive dust, debris <b>RBD</b>, trailing fire, glass shatter'],
+      ['M3GAN', 'layered vellum cloth, 100s of <b>wires</b> &amp; cables, custom deformer'],
+      ['Play Dirty', 'templated <b>snowfall</b> asset, snow environments, sparks'],
+      ['The Last Frontier', 'impact RBD, pyro dust, <b>sparks</b> elements'],
+      ['3000 Years of Longing', 'sparks, steam, <b>smoke</b>, rocket exhaust, magical string'],
+      ['Bureau 749', 'large-scale dust &amp; <b>vapour</b> volumes'],
+    ];
+    const one = items.map(([t, d]) => `<span class="item"><span class="t">${t}</span><span class="d">${d}</span></span>`).join('');
+    document.getElementById('tk').innerHTML = one + one;
+  })();
+
+  // Journey map
+  createJourneyMap(document.getElementById('journey'));
+</script>
+</body>
+</html>
