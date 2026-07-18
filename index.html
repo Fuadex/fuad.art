@@ -260,9 +260,13 @@
   }
   @media (max-width: 680px) {
     body { letter-spacing: 0; }
-    .nav { flex-direction: column; align-items: flex-start; gap: 14px; padding: 20px;
-           background: linear-gradient(180deg, rgba(6,6,6,0.9), transparent); }
-    .nav .links { gap: 14px 20px; flex-wrap: wrap; }
+    .nav { flex-direction: row; align-items: center; gap: 18px; padding: 16px 20px;
+           overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+           background: linear-gradient(180deg, rgba(6,6,6,0.92), transparent); }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav .brand { flex: 0 0 auto; }
+    .nav .links { flex: 0 0 auto; flex-wrap: nowrap; gap: 18px; }
+    .nav .links a { white-space: nowrap; }
     .hero { height: auto; min-height: 90vh; padding: 132px 20px 90px; }
     .hero h1 { font-size: clamp(40px, 13vw, 84px); }
     .hero .sub { font-size: 14px; }
@@ -271,17 +275,22 @@
     .sec-h h2 { font-size: clamp(34px, 10vw, 56px); }
     .feature { aspect-ratio: 4/3; }
     .feature .cap { left: 24px; right: 24px; bottom: 28px; }
-    .feature .cap h3 { font-size: clamp(32px, 10vw, 56px); }
-    .feature .cap p { font-size: 12px; }
+    .feature .cap h3 { font-size: clamp(26px, 7.4vw, 56px); }
+    .feature .cap p { display: none; }   /* hide long description so the Furiosa title stays visible */
     .feature .play { width: 48px; height: 48px; right: 24px; bottom: 28px; }
     .grid { grid-template-columns: 1fr; }
     .grid .blk { grid-column: span 1; }
-    .grid-sm { grid-template-columns: repeat(2, 1fr); }
+    .grid-sm { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+               scroll-snap-type: x proximity; scrollbar-width: none; }
+    .grid-sm::-webkit-scrollbar { display: none; }
+    .grid-sm .card-sm { flex: 0 0 auto; height: 46vw; scroll-snap-align: center; }
+    .card-sm.span2 { grid-column: auto; }   /* reset grid span; keeps its 5/2 aspect in the filmstrip */
     .about { padding: 72px 20px; }
     .about .q { font-size: clamp(24px, 6.4vw, 38px); }
     .about .body { font-size: 14px; }
     .cv { padding: 72px 20px; }
-    .cv-row { grid-template-columns: 54px 1fr; gap: 6px 16px; }
+    .cv-row { grid-template-columns: 68px 1fr; gap: 6px 14px; }
+    .cv-row .yr { white-space: nowrap; }
     .cv-row .role { font-size: 22px; }
     .cv-row .org { grid-column: 2; text-align: left; margin-top: 4px; }
     .end { height: auto; min-height: 72vh; padding: 100px 20px; }
