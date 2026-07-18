@@ -74,11 +74,12 @@
   }
   .hero h1 .it { font-style: italic; }
   .hero .sub {
-    margin-top: 30px;
+    margin: 30px auto 0;
     font-size: 15px; letter-spacing: 0.06em;
     color: var(--fg-2);
     max-width: 540px;
     line-height: 1.7;
+    text-align: center;
   }
   .hero .scroll {
     position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
@@ -127,8 +128,10 @@
   }
   .feature:hover .play { background: var(--gold); border-color: var(--gold); color: var(--black); }
 
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
   .card { position: relative; aspect-ratio: 16/10; overflow: hidden; cursor: pointer; }
+  .card.blk { grid-column: span 2; aspect-ratio: 500/209; }   /* wide gif card — spans 2 of 4 cols at 2.39:1, sets row height */
+  .card.sq { aspect-ratio: auto; }                             /* flanking single — squeezed narrower, stretches to match height */
   .card .img { position: absolute; inset: 0; transition: transform 1s cubic-bezier(.2,.7,.2,1); filter: grayscale(0.4) brightness(0.7); }
   .card:hover .img { transform: scale(1.06); filter: grayscale(0) brightness(0.95); }
   .card .grad { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.85), transparent 60%); }
@@ -160,10 +163,14 @@
   .ph-paradise { background: linear-gradient(180deg, #16303c, #5a96b0); }
   .ph-interceptor { background: linear-gradient(150deg, #2a1206, #a8662e 92%); }
 
+  /* Procedural FX canvas — injected over each card's gradient backdrop */
+  .fx-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+
   /* Further productions — smaller windows */
   .films-sub { display: flex; align-items: baseline; justify-content: space-between; padding: 30px 2px 14px; }
   .grid-sm { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
   .card-sm { position: relative; aspect-ratio: 5/4; overflow: hidden; cursor: pointer; }
+  .card-sm.span2 { grid-column: span 2; aspect-ratio: 5/2; }   /* wide filmic block — matches row height */
   .card-sm .img { position: absolute; inset: 0; transition: transform 1s cubic-bezier(.2,.7,.2,1); filter: grayscale(0.55) brightness(0.55); }
   .card-sm:hover .img { transform: scale(1.06); filter: grayscale(0) brightness(0.9); }
   .card-sm .grad { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent 66%); }
@@ -246,6 +253,8 @@
     .cv { padding-left: 32px; padding-right: 32px; }
     .hero h1 { font-size: clamp(48px, 10vw, 132px); }
     .grid { grid-template-columns: repeat(2, 1fr); }
+    .grid .blk { grid-column: span 2; aspect-ratio: 2.39; }   /* wide gif → full-width band */
+    .grid .sq { aspect-ratio: 16/10; }                         /* singles regain a definite height */
     .grid-sm { grid-template-columns: repeat(3, 1fr); }
     .about .q { font-size: clamp(28px, 4.6vw, 44px); }
   }
@@ -266,6 +275,7 @@
     .feature .cap p { font-size: 12px; }
     .feature .play { width: 48px; height: 48px; right: 24px; bottom: 28px; }
     .grid { grid-template-columns: 1fr; }
+    .grid .blk { grid-column: span 1; }
     .grid-sm { grid-template-columns: repeat(2, 1fr); }
     .about { padding: 72px 20px; }
     .about .q { font-size: clamp(24px, 6.4vw, 38px); }
@@ -300,8 +310,8 @@
   <div class="veil"></div>
   <div class="content">
     <div class="micro pre">FX Technical Director — Sydney</div>
-    <h1>Hi.<br>I'm Fuad.<br>I love to do FX</h1> <!--<span class="it"></span>-->
-    <p class="sub">Five years creating simulations for feature film. Sandstorms, snowfall, dust, sparks and glass — delivered with Houdini.</p>
+    <h1>Hi, I'm <span class="it gold">Fuad</span>.</h1>
+    <p class="sub">An FX Technical Director in Sydney. I make the sandstorms, snow, dust, sparks and glass for feature films — built in Houdini, engineered to hold up across a whole sequence.</p>
   </div>
   <div class="scroll"><div class="micro">Selected work</div><div class="line"></div></div>
 </header>
@@ -329,7 +339,7 @@
 </div>
 
 <section class="films">
-  <div class="feature">
+  <div class="feature" data-fx="sandstorm" data-fx-feature>
     <div class="img"><div class="ph ph-furiosa"></div></div><a target="_blank" href="https://vimeo.com/1130622647">
     <div class="grad"></div>
     <div class="cap">
@@ -340,41 +350,41 @@
       <p>Delivered RBD, Fire, FLIP and RnD work.</p>
       <!-- <p>  Setup to work automatically across three sequences. Delivered an automated system producing layers of massive Dust Atmos simulations for up to 15k crowd agents on shots up to 700 frames long across an entire sequence.</p><br> -->
       <!-- <p>Worked on Fire, emitted and destruction RBD, minor FLIP simulations. RnD on Vehicle Trails and Rooster Tails.</p> -->
-      <div class="studio-reveal" style="margin-top:14px;">DNEG</div><div class="fx">Impact dust · particles · magical smoke</div>
+      <div class="studio-reveal" style="margin-top:14px;">DNEG</div><div class="fx">Sandstorm · Dust Crowd Atmos · Vehicle Trails RnD</div>
     </div>
     <div class="play">▶</div></a>
   </div>
 
   <div class="grid">
-    <div class="card">
+    <div class="card sq" data-fx="portal">
       <div class="img"><div class="ph ph-motu"></div></div>
       <div class="grad"></div>
-      <div class="cap"><div class="top"><h4>Masters of the <span class="it">Universe</span></h4><span class="yr">'26</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact dust · particles · magical smoke</div></div>
+      <div class="cap"><div class="top"><h4>Masters of the <span class="it">Universe</span></h4><span class="yr">'26</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact Dust · Dust Particles · Magical Smoke Lookdev &amp; Automation</div></div>
     </div>
-    <div class="card">
-      <div class="img"><div class="ph ph-toxic"></div></div>
+    <div class="card blk">
+      <div class="img"><img class="ph ph-m3gan" src="img/M3GAN.gif" alt="M3GAN FX" loading="lazy"></div>
       <div class="grad"></div>
-      <div class="cap"><div class="top"><h4><span class="it">Toxic</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Explosive dust · debris RBD · glass</div></div>
+      <div class="cap"><div class="top"><h4><span class="it">M3GAN</span></h4><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Vellum Cloth · Wires · Hardware Parts · Deformer Solver · Smoke</div></div>
     </div>
-    <div class="card">
+    <div class="card sq" data-fx="snow">
       <div class="img"><div class="ph ph-snow"></div></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4>Play <span class="it">Dirty</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Templated snowfall · sparks</div></div>
     </div>
-    <div class="card">
+    <div class="card sq" data-fx="sparks">
       <div class="img"><div class="ph ph-frontier"></div></div>
       <div class="grad"></div>
-      <div class="cap"><div class="top"><h4>The Last <span class="it">Frontier</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact RBD · pyro dust · sparks</div></div>
+      <div class="cap"><div class="top"><h4>The Last <span class="it">Frontier</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact RBD · Dust · Smoke · Particles · Sparks</div></div>
     </div>
-    <div class="card">
-      <div class="img"><img class="ph ph-m3gan" src="img/M3GAN.gif" alt="M3GAN FX" loading="lazy"></div>
-      <div class="grad"></div>
-      <div class="cap"><div class="top"><h4><span class="it">M3GAN</span></h4><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Vellum cloth · wires · deformer solver</div></div>
-    </div>
-    <div class="card">
+    <div class="card blk">
       <div class="img"><img class="ph ph-longing" src="img/TTYOL.gif" alt="3000 Years of Longing FX" loading="lazy"></div>
       <div class="grad"></div>
-      <div class="cap"><div class="top"><h4>3000 Years of <span class="it">Longing</span></h4><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Sparks · steam · smoke · exhaust</div></div>
+      <div class="cap"><div class="top"><h4>3000 Years of <span class="it">Longing</span></h4><span class="yr">'21</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Magical String</div></div>
+    </div>
+    <div class="card sq" data-fx="destruction">
+      <div class="img"><div class="ph ph-toxic"></div></div>
+      <div class="grad"></div>
+      <div class="cap"><div class="top"><h4><span class="it">Toxic</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Explosive dust · debris RBD · glass</div></div>
     </div>
   </div>
 
@@ -383,30 +393,28 @@
     <span class="micro">Supporting &amp; element work</span>
   </div>
   <div class="grid-sm">
-    <div class="card-sm">
-      <div class="img"><div class="ph ph-thamma"></div></div>
+    <div class="card-sm span2">
+      <div class="img"><img class="ph ph-thamma" src="img/tvc.gif" alt="TVC" loading="lazy" style="transform:scale(1.12)"></div>
       <div class="grad"></div>
-      <div class="cap"><h5><span class="it">Thamma</span></h5><div class="line"><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Dust · RBD</div></div>
+      <div class="cap"><h5><span class="it">TVC</span></h5><div class="line"><span class="yr">'25</span></div><div class="studio-reveal">Freelance</div><div class="fx">Sand Environment · Vellum Grains · Particles</div></div>
     </div>
-    <div class="card-sm">
+    <div class="card-sm" data-fx="dustfall">
       <div class="img"><div class="ph ph-bureau"></div></div>
       <div class="grad"></div>
-      <div class="cap"><h5>Bureau <span class="it">749</span></h5><div class="line"><span class="yr">'24</span></div><div class="studio-reveal">DNEG</div><div class="fx">Dust · vapour volumes</div></div>
+      <div class="cap"><h5>Bureau <span class="it">749</span></h5><div class="line"><span class="yr">'24</span></div><div class="studio-reveal">DNEG</div><div class="fx">Thick Environment Dust · Oozing Vapour</div></div>
     </div>
-    <div class="card-sm">
-      <div class="img"><div class="ph ph-skyforce"></div></div>
-      <div class="grad"></div>
-      <div class="cap"><h5>Sky <span class="it">Force</span></h5><div class="line"><span class="yr">'24</span></div><div class="studio-reveal">DNEG</div><div class="fx">Pyro · atmospherics</div></div>
-    </div>
-    <div class="card-sm">
+<!--
+    <div class="card-sm" data-fx="water">
       <div class="img"><div class="ph ph-paradise"></div></div>
       <div class="grad"></div>
       <div class="cap"><h5>Ticket to <span class="it">Paradise</span></h5><div class="line"><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Water ripple RnD</div></div>
     </div>
-    <div class="card-sm">
-      <div class="img"><div class="ph ph-interceptor"></div></div>
+-->
+
+    <div class="card-sm span2">
+      <div class="img"><img class="ph ph-interceptor" src="img/interceptor.gif" alt="Interceptor FX" loading="lazy"></div>
       <div class="grad"></div>
-      <div class="cap"><h5><span class="it">Interceptor</span></h5><div class="line"><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Destruction · elements</div></div>
+      <div class="cap"><h5><span class="it">Interceptor</span></h5><div class="line"><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Flags · Smoke · Steam · Heat Haze</div></div>
     </div>
   </div>
 </section>
@@ -431,7 +439,7 @@
 </section>
 
 <section class="end" id="contact">
-  <div class="micro pre">Currently Open For Work</div>
+  <div class="micro pre">Booked Till End of 2027</div>
   <h2>Let's <a href="mailto:fuadsoudah@gmail.com" class="it">chat</a></h2>
   <div class="links">
     <a href="mailto:fuadsoudah@gmail.com">fuadsoudah@gmail.com</a>
@@ -506,6 +514,415 @@
         const dur = Math.min(1100, Math.max(650, Math.abs(y - window.pageYOffset) * 0.5));
         scrollTo(y, dur);
       });
+    });
+  })();
+
+  // Procedural FX cards — a small library of effect modules, one per FX discipline.
+  // Each module owns its own primitive (particles, billows, debris, sparks, ripples);
+  // a shared harness handles canvas, DPR, resize, hover intensity and offscreen pausing.
+  (function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const pick = r => rnd(r[0], r[1]);
+
+    // ---- shared harness: mounts one module's {seed, draw} onto a card ----
+    function mount(host, make, feature) {
+      const cv = document.createElement('canvas'); cv.className = 'fx-canvas';
+      const img = host.querySelector('.img');
+      if (img) img.insertAdjacentElement('afterend', cv); else host.insertBefore(cv, host.firstChild);
+      const ctx = cv.getContext('2d');
+      const DPR = Math.min(window.devicePixelRatio || 1, 2);
+      const sys = make();
+      let W = 0, H = 0;
+      function resize() { const r = cv.getBoundingClientRect(); W = r.width; H = r.height;
+        cv.width = Math.max(1, W*DPR); cv.height = Math.max(1, H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0); sys.seed(W, H); }
+
+      const rest = feature ? 0.5 : 0.16;
+      let intensity = rest, target = rest, boost = 0, boostTarget = 0, running = false, raf = 0, t = 0;
+      host.addEventListener('mouseenter', () => { target = 1; boostTarget = 1; });
+      host.addEventListener('mouseleave', () => { target = rest; boostTarget = 0; });
+      function frame() {
+        if (!running) { raf = 0; return; }
+        t += 0.016;
+        intensity += (target - intensity) * 0.05;        // opacity/liveliness — quick
+        boost += (boostTarget - boost) * 0.012;           // speed build-up — slow & gradual (0→1 over ~4s)
+        ctx.clearRect(0, 0, W, H);
+        sys.draw(ctx, W, H, t, intensity, boost);
+        ctx.globalCompositeOperation = 'source-over';
+        raf = requestAnimationFrame(frame);
+      }
+      function start() { if (raf) return; running = true; raf = requestAnimationFrame(frame); }
+      function stop() { running = false; if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+      const io = new IntersectionObserver(es => { for (const e of es) e.isIntersecting ? start() : stop(); }, { threshold: 0.02 });
+      window.addEventListener('resize', resize);
+      resize(); io.observe(host);
+    }
+
+    // ---- particles: sand, snow, dust, embers — grains + soft fronts + optional windlip streaks ----
+    function particles(p) {
+      let grains = [], fronts = [], streaks = [];
+      const wmid = (p.wind[0] + p.wind[1]) / 2;
+      return {
+        seed(W, H) {
+          grains = []; fronts = []; streaks = [];
+          const area = W * H, ng = Math.max(12, Math.round(area / p.grain.div));
+          for (let i = 0; i < ng; i++) grains.push({ x:rnd(0,W), y:rnd(0,H), s:pick(p.grain.s),
+            vx:pick(p.wind), vy:pick(p.vy), ph:rnd(0,9), hue:pick(p.grain.hue), light:pick(p.grain.light), a:pick(p.grain.a) });
+          const f = p.fronts;
+          for (let i = 0; i < f.n; i++) fronts.push({ x:rnd(0,W), y:rnd(H*0.05,H*0.95), r:pick(f.r)*H, a:pick(f.a), sp:rnd(0.4,1), ph:rnd(0,9), hue:pick(f.hue) });
+          if (p.streaks) { const s = p.streaks, ns = Math.max(4, Math.round(area / 26000 * s.f));
+            for (let i = 0; i < ns; i++) streaks.push({ x:rnd(0,W), y:rnd(0,H), len:pick(s.len), sp:pick(s.sp), a:pick(s.a), w:pick(s.w), hue:pick(s.hue) }); }
+        },
+        draw(ctx, W, H, t, intensity, boost) {
+          const spd = (0.55 + intensity * (p.rush || 1.7)) * (1 + boost * (p.build || 0));
+          ctx.globalCompositeOperation = p.blend;
+          const f = p.fronts;
+          for (const o of fronts) {
+            o.x += wmid * 0.35 * spd;
+            const y = o.y + Math.sin(t * o.sp * 0.5 + o.ph) * H * 0.05;
+            if (o.x + o.r < 0) { o.x = W + o.r; o.y = rnd(H*0.05, H*0.95); } else if (o.x - o.r > W) { o.x = -o.r; o.y = rnd(H*0.05, H*0.95); }
+            const a = o.a * (0.6 + intensity * 0.7);
+            const g = ctx.createRadialGradient(o.x, y, 0, o.x, y, o.r);
+            g.addColorStop(0, 'hsla(' + o.hue + ',' + f.sat + '%,' + f.light + '%,' + a + ')');
+            g.addColorStop(0.5, 'hsla(' + o.hue + ',' + f.sat + '%,' + (f.light*0.85) + '%,' + a*0.5 + ')');
+            g.addColorStop(1, 'hsla(' + o.hue + ',' + f.sat + '%,' + f.light + '%,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(o.x, y, o.r, 0, 6.283); ctx.fill();
+          }
+          const gr = p.grain, m = 4;
+          for (const q of grains) {
+            q.x += q.vx * spd; q.y += q.vy * spd + Math.sin(t * 1.3 + q.ph) * p.turb * 0.5;
+            if (q.x < -m) { q.x = W + m; q.y = rnd(0, H); } else if (q.x > W + m) { q.x = -m; q.y = rnd(0, H); }
+            if (q.y < -m) { q.y = H + m; q.x = rnd(0, W); } else if (q.y > H + m) { q.y = -m; q.x = rnd(0, W); }
+            const fl = 1 - gr.flick + gr.flick * (0.5 + 0.5 * Math.sin(t * 3 + q.ph));
+            ctx.fillStyle = 'hsla(' + q.hue + ',' + gr.sat + '%,' + q.light + '%,' + (q.a * (0.45 + intensity*0.55) * fl) + ')';
+            ctx.beginPath(); ctx.arc(q.x, q.y, q.s, 0, 6.283); ctx.fill();
+          }
+          if (p.streaks) for (const s of streaks) {
+            s.x -= s.sp * spd;
+            const y = s.y + Math.sin(t * 0.8 + s.x * 0.01) * 3;
+            if (s.x + s.len < 0) { s.x = W + s.len; s.y = rnd(0, H); }
+            const a = s.a * (0.5 + intensity * 0.9);
+            const g = ctx.createLinearGradient(s.x, y, s.x + s.len, y);
+            g.addColorStop(0, 'hsla(' + s.hue + ',80%,63%,0)');
+            g.addColorStop(0.5, 'hsla(' + s.hue + ',80%,64%,' + a + ')');
+            g.addColorStop(1, 'hsla(' + s.hue + ',80%,63%,0)');
+            ctx.strokeStyle = g; ctx.lineWidth = s.w;
+            ctx.beginPath(); ctx.moveTo(s.x, y); ctx.lineTo(s.x + s.len, y); ctx.stroke();
+          }
+        }
+      };
+    }
+
+    // ---- vortex: soft puffs orbiting the centre in one direction — a slow magical portal swirl ----
+    function vortex(c) {
+      let puffs = [];
+      function respawn(o, H) {
+        o.ang = rnd(0, 6.283); o.rad = rnd(H*0.16, H*0.4); o.av = rnd(0.006, 0.016);
+        o.rv = rnd(-0.05, 0.07); o.size = rnd(H*0.07, H*0.17); o.hue = pick(c.hue); o.a = pick(c.a);
+      }
+      return {
+        seed(W, H) { puffs = []; const n = Math.max(10, Math.round(W*H / 8000));
+          for (let i = 0; i < n; i++) { const o = {}; respawn(o, H); puffs.push(o); } },
+        draw(ctx, W, H, t, intensity) {
+          const spd = 0.5 + intensity * 1.5, cx = W/2, cy = H/2, lo = H*0.12, hi = H*0.42;
+          ctx.globalCompositeOperation = 'lighter';
+          const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, H*0.2);   // luminous heart
+          core.addColorStop(0, 'hsla(282,60%,72%,' + (0.07 + intensity*0.12) + ')');
+          core.addColorStop(1, 'hsla(275,60%,55%,0)');
+          ctx.fillStyle = core; ctx.beginPath(); ctx.arc(cx, cy, H*0.2, 0, 6.283); ctx.fill();
+          for (const o of puffs) {
+            o.ang += o.av * spd; o.rad += o.rv * spd;                          // orbit + breathe
+            if (o.rad < lo || o.rad > hi) { o.rv *= -1; o.rad = Math.max(lo, Math.min(hi, o.rad)); }
+            const x = cx + Math.cos(o.ang) * o.rad * 0.5, y = cy + Math.sin(o.ang) * o.rad * 1.05;
+            const a = o.a * (0.4 + intensity * 0.6);
+            const g = ctx.createRadialGradient(x, y, 0, x, y, o.size);
+            g.addColorStop(0, 'hsla(' + o.hue + ',' + c.sat + '%,' + c.light + '%,' + a + ')');
+            g.addColorStop(0.6, 'hsla(' + o.hue + ',' + c.sat + '%,' + (c.light*0.8) + '%,' + a*0.4 + ')');
+            g.addColorStop(1, 'hsla(' + o.hue + ',' + c.sat + '%,' + c.light + '%,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, o.size, 0, 6.283); ctx.fill();
+          }
+        }
+      };
+    }
+
+    // ---- dustfall: dust shed from mid-screen, kept to a central column settling toward the bottom ----
+    function dustfall(c) {
+      let grains = [], clouds = [];
+      function respawn(o, W, H) { o.x = W*0.5 + rnd(-W*0.18, W*0.18); o.y = rnd(H*0.3, H*0.52);
+        o.vx = rnd(-0.18, 0.18); o.vy = rnd(0.15, 0.6); o.s = rnd(0.6, 2.6); o.ph = rnd(0, 9); o.hue = rnd(28, 40); o.a = rnd(0.2, 0.6); }
+      return {
+        seed(W, H) {
+          grains = []; const n = Math.max(20, Math.round(W*H / 2600));
+          for (let i = 0; i < n; i++) { const o = {}; respawn(o, W, H); o.y = rnd(0, H); grains.push(o); }
+          clouds = []; for (let i = 0; i < 5; i++) clouds.push({ x:W*0.5 + rnd(-W*0.22,W*0.22), y:rnd(H*0.62,H*1.02), r:rnd(H*0.3,H*0.6), a:rnd(0.05,0.11), ph:rnd(0,9) });
+        },
+        draw(ctx, W, H, t, intensity) {
+          const spd = 0.5 + intensity * ((c && c.rush) || 1.3);
+          ctx.globalCompositeOperation = 'lighter';
+          const ba = 0.17 + intensity * 0.13, bed = ctx.createRadialGradient(W*0.5, H, 0, W*0.5, H, Math.max(W, H) * 0.5);  // centred bottom bed
+          bed.addColorStop(0, 'hsla(216,7%,52%,' + ba + ')');
+          bed.addColorStop(0.55, 'hsla(216,7%,48%,' + ba*0.35 + ')');
+          bed.addColorStop(1, 'hsla(216,7%,45%,0)');
+          ctx.fillStyle = bed; ctx.fillRect(0, 0, W, H);
+          for (const c of clouds) {                                            // low clouds hugging the centre
+            const x = c.x + Math.sin(t*0.25 + c.ph) * W*0.02, y = c.y + Math.sin(t*0.3 + c.ph) * H*0.03, a = c.a * (0.6 + intensity * 0.6);
+            const g = ctx.createRadialGradient(x, y, 0, x, y, c.r);
+            g.addColorStop(0, 'hsla(216,7%,52%,' + a + ')'); g.addColorStop(1, 'hsla(216,7%,45%,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, c.r, 0, 6.283); ctx.fill();
+          }
+          for (const o of grains) {                                            // grains falling in a central column
+            o.x += o.vx * spd + Math.sin(t*0.8 + o.ph) * 0.15; o.y += o.vy * spd;
+            if (o.y > H + 4) respawn(o, W, H);
+            ctx.fillStyle = 'hsla(216,7%,62%,' + (o.a * (0.5 + intensity * 0.5)) + ')';
+            ctx.beginPath(); ctx.arc(o.x, o.y, o.s, 0, 6.283); ctx.fill();
+          }
+        }
+      };
+    }
+
+    // ---- flag: a cloth banner on a pole — two-frequency ripple, folds that compress and catch light ----
+    function flag(c) {
+      let cols = 0;
+      return {
+        seed(W, H) { cols = Math.max(30, Math.round(W / 5)); },
+        draw(ctx, W, H, t, intensity) {
+          const spd = 0.7 + intensity * 1.7;                                    // more forceful flapping
+          const flagW = W * 0.6, flagH = H * 0.42, poleX = W * 0.18, cy = H * 0.5;   // smaller banner
+          const amp = flagH * (0.14 + intensity * 0.2);
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.fillStyle = 'rgba(18,14,10,0.92)'; ctx.fillRect(poleX - 2, cy - flagH*0.62, 3, flagH*1.24);   // pole
+          for (let i = 0; i < cols; i++) {
+            const u = i / (cols - 1), grow = 0.12 + u;                           // ripple grows toward the free edge
+            const p1 = u * 6 - t * 3.2 * spd, p2 = u * 13 - t * 4.6 * spd;       // two travelling waves
+            const w = (Math.sin(p1) * 0.7 + Math.sin(p2) * 0.3) * amp * grow;
+            const slope = (Math.cos(p1) * 4.2 + Math.cos(p2) * 3.9) * grow;      // combined slope → fold lighting
+            const fold = 0.82 + 0.18 * Math.cos(p1);                            // cloth foreshortens where it turns away
+            const h = flagH * (1 - u * 0.05) * fold;
+            const light = Math.max(0.08, Math.min(1, 0.5 + slope * 0.06)) * (0.62 + 0.38 * fold);
+            ctx.fillStyle = 'hsl(' + c.hue + ',' + c.sat + '%,' + (c.light * (0.4 + light)) + '%)';
+            ctx.fillRect(poleX + u * flagW, cy + w - h/2, (flagW / cols) + 1, h);
+          }
+        }
+      };
+    }
+
+    // ---- sparkBursts: periodic spark explosions at random points — fast, gravity-heavy ----
+    function sparkBursts() {
+      let ps = [], timer = 0;
+      function fire(W, H) {
+        const ox = rnd(W*0.12, W*0.88), oy = rnd(H*0.15, H*0.7), count = 10 + (Math.random()*10|0);
+        let launched = 0;
+        for (const o of ps) {
+          if (o.on) continue;
+          const a = rnd(0, 6.283), sp = rnd(2.2, 5.5);
+          o.x = ox; o.y = oy; o.px = ox; o.py = oy;
+          o.vx = Math.cos(a)*sp; o.vy = Math.sin(a)*sp - rnd(0, 1.5);           // slight upward bias
+          o.life = 0; o.max = rnd(26, 60); o.hue = rnd(18, 46); o.on = true;
+          if (++launched >= count) break;
+        }
+      }
+      return {
+        seed(W, H) { ps = []; const n = Math.max(40, Math.round(W*H / 2400));
+          for (let i = 0; i < n; i++) ps.push({ on:false }); timer = 0; },
+        draw(ctx, W, H, t, intensity) {
+          const spd = 0.7 + intensity * 1.8;
+          if (--timer <= 0) { fire(W, H); timer = Math.round(rnd(22, 55) / (0.5 + intensity)); }  // more frequent on hover
+          ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+          for (const o of ps) {
+            if (!o.on) continue;
+            o.px = o.x; o.py = o.y;
+            o.vy += 0.11 * spd; o.x += o.vx * spd; o.y += o.vy * spd; o.life++;   // heavy gravity
+            if (o.life > o.max || o.y > H + 6) { o.on = false; continue; }
+            const k = 1 - o.life / o.max;
+            ctx.strokeStyle = 'hsla(' + o.hue + ',95%,' + (58 + 32*k) + '%,' + (k * (0.4 + intensity * 0.5)) + ')';
+            ctx.lineWidth = 0.9 + k;
+            ctx.beginPath(); ctx.moveTo(o.px, o.py); ctx.lineTo(o.x, o.y); ctx.stroke();
+            ctx.fillStyle = 'hsla(' + (o.hue + 8) + ',100%,' + (72 + 20*k) + '%,' + k + ')';
+            ctx.beginPath(); ctx.arc(o.x, o.y, 0.9 + k, 0, 6.283); ctx.fill();
+          }
+        }
+      };
+    }
+
+    // ---- grains: particles driven across by a pulsing gust — momentum, drag and motion-blur read as force ----
+    function grains(c) {
+      let ps = [];
+      function respawn(o, W, H, reenter) {
+        o.x = reenter ? rnd(-W*0.1, -2) : rnd(0, W); o.y = rnd(0, H);         // enter from the left, get pushed across
+        o.vx = rnd(0.4, 1.2); o.vy = rnd(-0.3, 0.3); o.m = rnd(0.6, 1.4);     // mass → heavier grains resist the force
+        o.s = rnd(0.6, 2.6); o.a = rnd(0.3, 0.9); o.hue = pick(c.hue); o.px = o.x; o.py = o.y;
+      }
+      return {
+        seed(W, H) { ps = []; const n = Math.max(50, Math.round(W*H / 1200));
+          for (let i = 0; i < n; i++) { const o = {}; respawn(o, W, H, false); ps.push(o); } },
+        draw(ctx, W, H, t, intensity) {
+          const spd = 0.6 + intensity * 1.9;
+          const push = (0.06 + intensity * 0.14) * (0.6 + 0.4 * Math.sin(t * 0.9));   // gust that pulses in strength
+          const dir = -0.25 + Math.sin(t * 0.5) * 0.25;                               // and swings around horizontal
+          const fx = Math.cos(dir) * push, fy = Math.sin(dir) * push;
+          ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+          for (const o of ps) {
+            const turb = Math.sin(o.x * 0.02 + o.y * 0.02 + t) * 0.03;
+            o.vx += fx / o.m; o.vy += fy / o.m + turb;
+            o.vx *= 0.96; o.vy *= 0.96;                                               // drag → momentum settles
+            o.px = o.x; o.py = o.y; o.x += o.vx * spd; o.y += o.vy * spd;
+            if (o.x > W + 6 || o.x < -W*0.15 || o.y < -6 || o.y > H + 6) respawn(o, W, H, true);
+            const v = Math.min(1, Math.hypot(o.vx, o.vy) * 0.5), a = o.a * (0.45 + intensity * 0.55);
+            ctx.strokeStyle = 'hsla(' + o.hue + ',' + c.sat + '%,' + c.light + '%,' + (a * (0.3 + v*0.5)) + ')';  // motion-blur streak
+            ctx.lineWidth = o.s;
+            ctx.beginPath(); ctx.moveTo(o.px, o.py); ctx.lineTo(o.x, o.y); ctx.stroke();
+            ctx.fillStyle = 'hsla(' + o.hue + ',' + c.sat + '%,' + (c.light + v*12) + '%,' + a + ')';
+            ctx.beginPath(); ctx.arc(o.x, o.y, o.s, 0, 6.283); ctx.fill();
+          }
+        }
+      };
+    }
+
+    // ---- debris: tumbling angular chunks under gravity + a warm dust haze — reads RBD destruction ----
+    function debris(c) {
+      let chunks = [], dust = [];
+      function poly() { const n = 4 + (Math.random()*3|0), v = []; for (let i=0;i<n;i++) v.push(0.5 + Math.random()*0.7); return v; }
+      function respawn(o, W, H) {
+        o.x = rnd(0, W); o.y = rnd(-H*0.4, -6);
+        o.vx = rnd(-0.6, 0.6); o.vy = rnd(0.4, 1.3); o.rot = rnd(0, 6.28); o.vr = rnd(-0.08, 0.08);
+        o.size = rnd(H*0.006, H*0.0225); o.g = 150 + (Math.random()*70|0); o.warm = Math.random()*0.4; o.verts = poly();
+      }
+      return {
+        seed(W, H) {
+          chunks = []; const n = Math.max(10, Math.round(W*H / 5200));
+          for (let i = 0; i < n; i++) { const o = {}; respawn(o, W, H); o.y = rnd(0, H); chunks.push(o); }
+          dust = []; for (let i = 0; i < 6; i++) dust.push({ x:rnd(0,W), y:rnd(H*0.3,H), r:rnd(H*0.4,H*0.9), a:rnd(0.05,0.1), ph:rnd(0,9) });
+        },
+        draw(ctx, W, H, t, intensity, boost) {
+          const spd = (0.6 + intensity * ((c && c.rush) || 1.9)) * (1 + boost * ((c && c.build) || 0));
+          ctx.globalCompositeOperation = 'lighter';                 // dust haze behind
+          for (const d of dust) {
+            const y = d.y + Math.sin(t * 0.4 + d.ph) * H * 0.04, a = d.a * (0.6 + intensity * 0.6);
+            const g = ctx.createRadialGradient(d.x, y, 0, d.x, y, d.r);
+            g.addColorStop(0, 'hsla(32,30%,55%,' + a + ')'); g.addColorStop(1, 'hsla(30,30%,45%,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(d.x, y, d.r, 0, 6.283); ctx.fill();
+          }
+          ctx.globalCompositeOperation = 'source-over';             // solid tumbling chunks
+          for (const o of chunks) {
+            o.vy += 0.012 * spd; o.x += o.vx * spd; o.y += o.vy * spd; o.rot += o.vr * spd;
+            if (o.y - o.size > H + 4 || o.x < -30 || o.x > W + 30) respawn(o, W, H);
+            const r = Math.round(o.g + o.warm * 40), gg = Math.round(o.g), b = Math.round(o.g - o.warm * 30);
+            ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot);
+            ctx.fillStyle = 'rgba(' + r + ',' + gg + ',' + b + ',' + (0.5 + intensity * 0.4) + ')';
+            ctx.beginPath();
+            const vn = o.verts.length;
+            for (let i = 0; i < vn; i++) { const ang = i / vn * 6.283, rr = o.size * o.verts[i];
+              i ? ctx.lineTo(Math.cos(ang)*rr, Math.sin(ang)*rr) : ctx.moveTo(Math.cos(ang)*rr, Math.sin(ang)*rr); }
+            ctx.closePath(); ctx.fill(); ctx.restore();
+          }
+        }
+      };
+    }
+
+    // ---- sparks: bright heads with motion-trails; emission pattern set by cfg.spawn ----
+    //   'bottom'  — fountain up from the base (default)
+    //   'scatter' — spawn anywhere in the upper field and rain down
+    //   'center'  — burst radially from the middle of the frame
+    function sparks(cfg) {
+      const mode = (cfg && cfg.spawn) || 'bottom', HUE = (cfg && cfg.hue) || [18, 44];
+      let ps = [];
+      function respawn(o, W, H, on) {
+        o.on = on; o.life = 0; o.max = rnd(28, 78); o.hue = rnd(HUE[0], HUE[1]);
+        if (mode === 'center') { const a = rnd(0, 6.283), sp = rnd(1.1, 3.2);
+          o.x = W/2 + rnd(-W*0.05, W*0.05); o.y = H/2 + rnd(-H*0.05, H*0.05); o.vx = Math.cos(a)*sp; o.vy = Math.sin(a)*sp; }
+        else if (mode === 'scatter') { o.x = rnd(0, W); o.y = rnd(-H*0.05, H*0.5); o.vx = rnd(-0.4, 0.4); o.vy = rnd(0.3, 1.1); }
+        else { o.x = rnd(0, W); o.y = rnd(H*0.8, H*1.02); o.vx = rnd(-1.3, 1.3); o.vy = rnd(-3.4, -1.6); }
+        o.px = o.x; o.py = o.y;
+      }
+      return {
+        seed(W, H) { ps = []; const n = Math.max(14, Math.round(W*H / 5200));
+          for (let i = 0; i < n; i++) { const o = {}; respawn(o, W, H, true); o.life = rnd(0, o.max); ps.push(o); } },
+        draw(ctx, W, H, t, intensity, boost) {
+          const spd = (0.6 + intensity * ((cfg && cfg.rush) || 1.7)) * (1 + boost * ((cfg && cfg.build) || 0)), g = mode === 'bottom' ? 0.05 : 0.045;
+          ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+          for (const o of ps) {
+            if (!o.on) { if (Math.random() < 0.006 + intensity * 0.03) respawn(o, W, H, true); continue; }
+            o.px = o.x; o.py = o.y;
+            o.vy += g * spd; o.x += o.vx * spd; o.y += o.vy * spd; o.life++;
+            if (o.life > o.max || o.y > H + 6) { respawn(o, W, H, Math.random() < 0.2 + intensity * 0.7); continue; }
+            const k = 1 - o.life / o.max;
+            ctx.strokeStyle = 'hsla(' + o.hue + ',95%,' + (58 + 32*k) + '%,' + (k * (0.35 + intensity * 0.6)) + ')';
+            ctx.lineWidth = 0.9 + k;
+            ctx.beginPath(); ctx.moveTo(o.px, o.py); ctx.lineTo(o.x, o.y); ctx.stroke();
+            ctx.fillStyle = 'hsla(' + (o.hue + 8) + ',100%,' + (72 + 20*k) + '%,' + k + ')';
+            ctx.beginPath(); ctx.arc(o.x, o.y, 0.9 + k * 0.9, 0, 6.283); ctx.fill();
+          }
+        }
+      };
+    }
+
+    // ---- water: expanding concentric ripple rings + drifting surface glints ----
+    function water(c) {
+      let rings = [], glints = [];
+      function respawn(o, W, H) { o.x = rnd(0, W); o.y = rnd(0, H); o.r = 0; o.max = rnd(H*0.3, H*0.85); o.a = rnd(0.5, 1); }
+      return {
+        seed(W, H) {
+          rings = []; const n = Math.max(5, Math.round(W*H / 32000));
+          for (let i = 0; i < n; i++) { const o = {}; respawn(o, W, H); o.r = rnd(0, o.max); rings.push(o); }
+          glints = []; for (let i = 0; i < 5; i++) glints.push({ x:rnd(0,W), y:rnd(0,H), r:rnd(H*0.1,H*0.28), ph:rnd(0,9), vx:rnd(-0.15,0.15) });
+        },
+        draw(ctx, W, H, t, intensity) {
+          const spd = 0.5 + intensity * 1.4;
+          ctx.globalCompositeOperation = 'lighter';
+          for (const s of glints) {                                 // surface sheen
+            s.x += s.vx * spd; if (s.x < -s.r) s.x = W + s.r; else if (s.x > W + s.r) s.x = -s.r;
+            const y = s.y + Math.sin(t * 0.5 + s.ph) * H * 0.03;
+            const a = (0.05 + intensity * 0.06) * (0.6 + 0.4 * Math.sin(t * 0.7 + s.ph));
+            const g = ctx.createRadialGradient(s.x, y, 0, s.x, y, s.r);
+            g.addColorStop(0, 'hsla(' + c.hue + ',' + c.sat + '%,80%,' + a + ')');
+            g.addColorStop(1, 'hsla(' + c.hue + ',' + c.sat + '%,70%,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(s.x, y, s.r, 0, 6.283); ctx.fill();
+          }
+          for (const o of rings) {                                  // ripples (two concentric per source)
+            o.r += 0.5 + intensity * 1.3;
+            if (o.r > o.max) respawn(o, W, H);
+            const k = 1 - o.r / o.max;
+            for (let j = 0; j < 2; j++) {
+              const rr = o.r - j * 7; if (rr <= 0) continue;
+              ctx.strokeStyle = 'hsla(' + c.hue + ',' + c.sat + '%,74%,' + (o.a * k * k * (0.22 + intensity * 0.5) * (1 - j*0.4)) + ')';
+              ctx.lineWidth = 1.4;
+              ctx.beginPath(); ctx.arc(o.x, o.y, rr, 0, 6.283); ctx.stroke();
+            }
+          }
+        }
+      };
+    }
+
+    // registry: FX family -> module factory (with its palette/motion)
+    const FX = {
+      sandstorm: () => particles({ blend:'lighter', rush:3.0, build:2, wind:[-2.2,-0.7], vy:[-0.4,0.2], turb:0.5,
+        grain:{ div:2600, s:[0.4,2.2], hue:[28,44], sat:85, light:[56,74], a:[0.30,0.85], flick:0.5 },
+        fronts:{ n:7, r:[0.5,1.2], a:[0.05,0.13], hue:[30,34], sat:68, light:52 },
+        streaks:{ f:1, hue:[30,42], sp:[2.2,4.5], len:[60,200], a:[0.05,0.16], w:[1,2.4] } }),
+      snow: () => particles({ blend:'source-over', wind:[-0.5,0.5], vy:[0.5,1.3], turb:0.9,
+        grain:{ div:2400, s:[0.6,2.6], hue:[205,220], sat:14, light:[82,96], a:[0.40,0.95], flick:0.15 },
+        fronts:{ n:3, r:[0.5,1.0], a:[0.02,0.05], hue:[210,216], sat:12, light:70 }, streaks:null }),
+      dust: () => particles({ blend:'lighter', wind:[-1.0,-0.25], vy:[-0.15,0.1], turb:0.4,
+        grain:{ div:3200, s:[0.5,2.4], hue:[28,40], sat:42, light:[48,66], a:[0.25,0.70], flick:0.3 },
+        fronts:{ n:8, r:[0.5,1.15], a:[0.06,0.12], hue:[30,36], sat:40, light:50 },
+        streaks:{ f:0.25, hue:[30,38], sp:[1.2,2.6], len:[50,150], a:[0.04,0.10], w:[1,2] } }),
+      embers: () => particles({ blend:'lighter', wind:[-0.4,0.4], vy:[-1.4,-0.5], turb:0.8,
+        grain:{ div:4200, s:[0.5,2.0], hue:[10,40], sat:92, light:[52,72], a:[0.40,0.95], flick:1.1 },
+        fronts:{ n:4, r:[0.4,0.9], a:[0.03,0.08], hue:[16,30], sat:80, light:48 },
+        streaks:{ f:0.25, hue:[14,34], sp:[1,2.4], len:[20,70], a:[0.05,0.12], w:[0.8,1.6] } }),
+      sparks: () => sparks({ spawn:'bottom', rush:3.0, build:2 }),            // The Last Frontier — fountain up from the base
+      burst: () => sparkBursts(),                          // Sky Force — explosions at random points
+      flag: () => flag({ hue:28, sat:58, light:52 }),      // Interceptor — waving cloth banner
+      destruction: () => debris({ rush:3.0, build:2 }),
+      dustfall: () => dustfall({ rush:2.4 }),                           // Bureau 749 — dust settling, centred
+      portal: () => vortex({ hue:[262,292], sat:46, light:58, a:[0.14,0.36] }),  // MOTU — swirling ellipsoid
+      grains: () => grains({ hue:[40,48], sat:30, light:75 }),  // Freelance TVC — flow-field particles
+      water: () => water({ hue:195, sat:55 }),
+    };
+
+    document.querySelectorAll('[data-fx]').forEach(el => {
+      const make = FX[el.getAttribute('data-fx')]; if (!make) return;
+      mount(el, make, el.hasAttribute('data-fx-feature'));
     });
   })();
 </script>
