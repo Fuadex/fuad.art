@@ -371,7 +371,7 @@
       <div class="cap"><div class="top"><h4>Masters of the <span class="it">Universe</span></h4><span class="yr">'26</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact Dust · Dust Particles · Magical Smoke Lookdev &amp; Automation</div></div>
     </div>
     <div class="card blk">
-      <div class="img"><img class="ph ph-m3gan" src="img/M3GAN.gif" alt="M3GAN FX" loading="lazy"></div>
+      <div class="img"><img class="ph ph-m3gan" src="img/M3GAN_still.jpg" data-gif="img/M3GAN.gif" alt="M3GAN FX" loading="lazy"></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4><span class="it">M3GAN</span></h4><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Vellum Cloth · Wires · Hardware Parts · Deformer Solver · Smoke</div></div>
     </div>
@@ -386,7 +386,7 @@
       <div class="cap"><div class="top"><h4>The Last <span class="it">Frontier</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact RBD · Dust · Smoke · Particles · Sparks</div></div>
     </div>
     <div class="card blk">
-      <div class="img"><img class="ph ph-longing" src="img/TTYOL.gif" alt="3000 Years of Longing FX" loading="lazy"></div>
+      <div class="img"><img class="ph ph-longing" src="img/TTYOL_still.jpg" data-gif="img/TTYOL.gif" alt="3000 Years of Longing FX" loading="lazy"></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4>3000 Years of <span class="it">Longing</span></h4><span class="yr">'21</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Magical String</div></div>
     </div>
@@ -403,7 +403,7 @@
   </div>
   <div class="grid-sm">
     <div class="card-sm span2">
-      <div class="img"><img class="ph ph-thamma" src="img/tvc.gif" alt="TVC" loading="lazy" style="transform:scale(1.12)"></div>
+      <div class="img"><img class="ph ph-thamma" src="img/tvc_still.jpg" data-gif="img/tvc.gif" alt="TVC" loading="lazy" style="transform:scale(1.12)"></div>
       <div class="grad"></div>
       <div class="cap"><h5><span class="it">TVC</span></h5><div class="line"><span class="yr">'25</span></div><div class="studio-reveal">Freelance</div><div class="fx">Sand Environment · Vellum Grains · Particles</div></div>
     </div>
@@ -421,7 +421,7 @@
 -->
 
     <div class="card-sm span2">
-      <div class="img"><img class="ph ph-interceptor" src="img/interceptor.gif" alt="Interceptor FX" loading="lazy"></div>
+      <div class="img"><img class="ph ph-interceptor" src="img/interceptor_still.jpg" data-gif="img/interceptor.gif" alt="Interceptor FX" loading="lazy"></div>
       <div class="grad"></div>
       <div class="cap"><h5><span class="it">Interceptor</span></h5><div class="line"><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Flags · Smoke · Steam · Heat Haze</div></div>
     </div>
@@ -556,7 +556,7 @@
         intensity += (target - intensity) * 0.05;        // opacity/liveliness — quick
         boost += (boostTarget - boost) * 0.012;           // speed build-up — slow & gradual (0→1 over ~4s)
         ctx.clearRect(0, 0, W, H);
-        sys.draw(ctx, W, H, t, intensity, boost);
+        sys.draw(ctx, W, H, t, intensity, boost, Math.min(1, Math.max(0, (intensity - rest) / (1 - rest))));
         ctx.globalCompositeOperation = 'source-over';
         raf = requestAnimationFrame(frame);
       }
@@ -802,8 +802,9 @@
           for (let i = 0; i < n; i++) { const o = {}; respawn(o, W, H); o.y = rnd(0, H); chunks.push(o); }
           dust = []; for (let i = 0; i < 6; i++) dust.push({ x:rnd(0,W), y:rnd(H*0.3,H), r:rnd(H*0.4,H*0.9), a:rnd(0.05,0.1), ph:rnd(0,9) });
         },
-        draw(ctx, W, H, t, intensity, boost) {
-          const spd = (0.6 + intensity * ((c && c.rush) || 1.9)) * (1 + boost * ((c && c.build) || 0));
+        draw(ctx, W, H, t, intensity, boost, hover) {
+          const calm = (c && c.calm) ? c.calm + (1 - c.calm) * hover : 1;   // slower at rest, full speed once hovered
+          const spd = (0.6 + intensity * ((c && c.rush) || 1.9)) * (1 + boost * ((c && c.build) || 0)) * calm;
           ctx.globalCompositeOperation = 'lighter';                 // dust haze behind
           for (const d of dust) {
             const y = d.y + Math.sin(t * 0.4 + d.ph) * H * 0.04, a = d.a * (0.6 + intensity * 0.6);
@@ -922,7 +923,7 @@
       sparks: () => sparks({ spawn:'bottom', rush:3.0, build:2 }),            // The Last Frontier — fountain up from the base
       burst: () => sparkBursts(),                          // Sky Force — explosions at random points
       flag: () => flag({ hue:28, sat:58, light:52 }),      // Interceptor — waving cloth banner
-      destruction: () => debris({ rush:3.0, build:2 }),
+      destruction: () => debris({ rush:3.0, build:2, calm:0.5 }),   // Toxic — half speed at rest
       dustfall: () => dustfall({ rush:2.4 }),                           // Bureau 749 — dust settling, centred
       portal: () => vortex({ hue:[262,292], sat:46, light:58, a:[0.14,0.36] }),  // MOTU — swirling ellipsoid
       grains: () => grains({ hue:[40,48], sat:30, light:75 }),  // Freelance TVC — flow-field particles
@@ -933,6 +934,25 @@
       const make = FX[el.getAttribute('data-fx')]; if (!make) return;
       mount(el, make, el.hasAttribute('data-fx-feature'));
     });
+  })();
+
+  // GIF playback — only ONE gif plays at a time (sticky). M3GAN plays on load; hovering another gif
+  // hands playback to it and it keeps playing until a different gif is hovered. (A browser GIF can't be
+  // paused mid-frame, so the outgoing one rests on its still/first frame.)
+  (function () {
+    const gifs = [...document.querySelectorAll('img[data-gif]')].map(img => ({
+      img, still: img.getAttribute('src'), gif: img.getAttribute('data-gif'),
+      card: img.closest('.card, .card-sm')
+    })).filter(g => g.card);
+    let active = null;
+    function activate(g) {
+      if (g === active) return;
+      if (active) active.img.src = active.still;   // outgoing rests on its first frame
+      active = g;
+      g.img.src = g.gif;                            // play from the start
+    }
+    gifs.forEach(g => g.card.addEventListener('mouseenter', () => activate(g)));
+    activate(gifs.find(g => /M3GAN/i.test(g.gif)) || gifs[0]);   // M3GAN plays first
   })();
 </script>
 </body>
