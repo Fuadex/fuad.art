@@ -3,7 +3,53 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Fuad Soudah — Cinema</title>
+<title>Fuad Soudah — FX Technical Director</title>
+<meta name="description" content="Fuad Soudah — FX Technical Director in Sydney. Sandstorms, dust, destruction and glass for feature film, built in Houdini. DNEG · Fin Design + Effects — Furiosa, M3GAN and more." />
+<link rel="canonical" href="https://fuad.art/" />
+<meta name="theme-color" content="#060606" />
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Fuad Soudah" />
+<meta property="og:url" content="https://fuad.art/" />
+<meta property="og:title" content="Fuad Soudah — FX Technical Director" />
+<meta property="og:description" content="Sandstorms, dust, destruction and glass for feature film, built in Houdini. DNEG · Fin Design + Effects." />
+<meta property="og:image" content="https://fuad.art/img/og.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Fuad Soudah — FX Technical Director" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Fuad Soudah — FX Technical Director" />
+<meta name="twitter:description" content="Sandstorms, dust, destruction and glass for feature film, built in Houdini." />
+<meta name="twitter:image" content="https://fuad.art/img/og.jpg" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Fuad Soudah",
+  "jobTitle": "FX Technical Director",
+  "description": "FX Technical Director in Sydney creating simulations for feature film in Houdini — sandstorms, dust, destruction, pyro and glass.",
+  "url": "https://fuad.art",
+  "image": "https://fuad.art/img/og.jpg",
+  "address": { "@type": "PostalAddress", "addressLocality": "Sydney", "addressRegion": "NSW", "addressCountry": "AU" },
+  "worksFor": { "@type": "Organization", "name": "DNEG" },
+  "knowsAbout": ["Houdini", "FX simulation", "destruction / RBD", "pyro", "particles", "crowd atmospherics", "rendering"],
+  "alumniOf": [
+    { "@type": "CollegeOrUniversity", "name": "University of Sydney" },
+    { "@type": "CollegeOrUniversity", "name": "Parsons School of Design" },
+    { "@type": "CollegeOrUniversity", "name": "University of Technology Sydney" },
+    { "@type": "CollegeOrUniversity", "name": "KAIST" },
+    { "@type": "CollegeOrUniversity", "name": "Aalto University" },
+    { "@type": "CollegeOrUniversity", "name": "LMU Munich" }
+  ],
+  "sameAs": [
+    "https://www.imdb.com/name/nm13765535",
+    "https://www.linkedin.com/in/fuad-soudah",
+    "https://vimeo.com/1130622647"
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
@@ -132,6 +178,7 @@
   .card { position: relative; aspect-ratio: 16/10; overflow: hidden; cursor: pointer; }
   .card.blk { grid-column: span 2; aspect-ratio: 500/209; }   /* wide gif card — spans 2 of 4 cols at 2.39:1, sets row height */
   .card.sq { aspect-ratio: auto; }                             /* flanking single — squeezed narrower, stretches to match height */
+  .cardlink { position: absolute; inset: 0; z-index: 6; }      /* whole card links to the film's IMDb page */
   .card .img { position: absolute; inset: 0; transition: transform 1s cubic-bezier(.2,.7,.2,1); filter: grayscale(0.4) brightness(0.7); }
   .card:hover .img { transform: scale(1.06); filter: grayscale(0) brightness(0.95); }
   .card .grad { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.85), transparent 60%); }
@@ -320,7 +367,7 @@
   <div class="content">
     <div class="micro pre">FX Technical Director — Sydney</div>
     <h1>Hi, I'm <span class="it gold">Fuad</span>.</h1>
-    <p class="sub">An FX Technical Director in Sydney. I make the sandstorms, snow, dust, sparks and glass for feature films — built in Houdini, engineered to hold up across a whole sequence.</p>
+    <p class="sub">An FX Technical Director in Sydney. I make sandstorms, snow, dust, sparks and glass for feature films — built in Houdini, engineered to hold up across entire sequences.</p>
   </div>
   <div class="scroll"><div class="micro">Selected work</div><div class="line"></div></div>
 </header>
@@ -369,31 +416,37 @@
       <div class="img"><div class="ph ph-motu"></div></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4>Masters of the <span class="it">Universe</span></h4><span class="yr">'26</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact Dust · Dust Particles · Magical Smoke Lookdev &amp; Automation</div></div>
+      <a class="cardlink" href="https://www.imdb.com/title/tt0427340/" target="_blank" rel="noopener" aria-label="Masters of the Universe on IMDb"></a>
     </div>
     <div class="card blk">
       <div class="img"><img class="ph ph-m3gan" src="img/M3GAN_still.jpg" data-gif="img/M3GAN.gif" alt="M3GAN FX" loading="lazy"></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4><span class="it">M3GAN</span></h4><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Vellum Cloth · Wires · Hardware Parts · Deformer Solver · Smoke</div></div>
+      <a class="cardlink" href="https://www.imdb.com/title/tt8760708/" target="_blank" rel="noopener" aria-label="M3GAN on IMDb"></a>
     </div>
     <div class="card sq" data-fx="snow">
       <div class="img"><div class="ph ph-snow"></div></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4>Play <span class="it">Dirty</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Templated snowfall · sparks</div></div>
+      <a class="cardlink" href="https://www.imdb.com/title/tt18392014/" target="_blank" rel="noopener" aria-label="Play Dirty on IMDb"></a>
     </div>
     <div class="card sq" data-fx="sparks">
       <div class="img"><div class="ph ph-frontier"></div></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4>The Last <span class="it">Frontier</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Impact RBD · Dust · Smoke · Particles · Sparks</div></div>
+      <a class="cardlink" href="https://www.imdb.com/title/tt26862142/" target="_blank" rel="noopener" aria-label="The Last Frontier on IMDb"></a>
     </div>
     <div class="card blk">
       <div class="img"><img class="ph ph-longing" src="img/TTYOL_still.jpg" data-gif="img/TTYOL.gif" alt="3000 Years of Longing FX" loading="lazy"></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4>3000 Years of <span class="it">Longing</span></h4><span class="yr">'21</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Magical String</div></div>
+      <a class="cardlink" href="https://www.imdb.com/title/tt9198364/" target="_blank" rel="noopener" aria-label="3000 Years of Longing on IMDb"></a>
     </div>
     <div class="card sq" data-fx="destruction">
       <div class="img"><div class="ph ph-toxic"></div></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4><span class="it">Toxic</span></h4><span class="yr">'25</span></div><div class="studio-reveal">DNEG</div><div class="fx">Explosive dust · debris RBD · glass</div></div>
+      <a class="cardlink" href="https://www.imdb.com/title/tt27530512/" target="_blank" rel="noopener" aria-label="Toxic on IMDb"></a>
     </div>
   </div>
 
@@ -411,6 +464,7 @@
       <div class="img"><div class="ph ph-bureau"></div></div>
       <div class="grad"></div>
       <div class="cap"><h5>Bureau <span class="it">749</span></h5><div class="line"><span class="yr">'24</span></div><div class="studio-reveal">DNEG</div><div class="fx">Thick Environment Dust · Oozing Vapour</div></div>
+      <a class="cardlink" href="https://www.imdb.com/title/tt10210064/" target="_blank" rel="noopener" aria-label="Bureau 749 on IMDb"></a>
     </div>
 <!--
     <div class="card-sm" data-fx="water">
@@ -424,14 +478,15 @@
       <div class="img"><img class="ph ph-interceptor" src="img/interceptor_still.jpg" data-gif="img/interceptor.gif" alt="Interceptor FX" loading="lazy"></div>
       <div class="grad"></div>
       <div class="cap"><h5><span class="it">Interceptor</span></h5><div class="line"><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Flags · Smoke · Steam · Heat Haze</div></div>
+      <a class="cardlink" href="https://www.imdb.com/title/tt14174940/" target="_blank" rel="noopener" aria-label="Interceptor on IMDb"></a>
     </div>
   </div>
 </section>
 
 <section class="about" id="about">
   <div class="micro">About</div><!--Houdini is a fantastic piece of software —<br/>it confluences an entire variety of knowledge I've acquired throughout my lifetime. -->
-  <p class="q" style="margin-top:30px;">I like to <span class="it">design systems</span> that work across entire sequences from ingest to collision processing, simulation setup, rendering, packaging and slapcoming.</p>
-  <p class="body">I'm an FX Technical Director with 5 years of experience delivering FX with Houdini in production, shaped across <em>DNEG Sydney</em> and <em>Fin Design + Effects</em>. Before VFX, I studied interaction design and creative technology across four continents — including <em>Parsons NYC</em> and <em>LMU Munich</em>.</p>
+  <p class="q" style="margin-top:30px;">I like to <span class="it">design systems</span> that work across entire sequences from ingest to collision processing, simulation setup, rendering, packaging and slapcoming</p>
+  <p class="body">I'm an FX Technical Director with 5 years of experience delivering FX with Houdini in production, shaped across <em>DNEG Sydney</em> and <em>Fin Design + Effects</em>. Before VFX, I studied interaction design and creative technologies across four continents — including <em>Parsons NYC</em> and <em>LMU Munich</em>.</p>
   <div class="edu"><span>Univ. Sydney</span><span>Parsons NYC</span><span>KAIST Korea</span><span>Aalto Helsinki</span><span>LMU München</span><span>Animal Logic Academy</span></div>
 </section>
 
