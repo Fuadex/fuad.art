@@ -59,7 +59,7 @@
     --black-2: #0d0d0e;
     --fg: #f3f1ec;
     --fg-2: #9a978f;
-    --fg-3: #5a5852;
+    --fg-3: #7d7a72;
     --rule: rgba(243,241,236,0.1);
     --gold: #c8a96a;
   }
@@ -139,12 +139,12 @@
   .credits-strip {
     border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
     overflow: hidden; padding: 16px 0;
-    display: flex;
+    display: flex; touch-action: pan-y;
   }
-  .credits-strip .track { display: inline-flex; gap: 56px; white-space: nowrap; animation: scroll-l 40s linear infinite; padding-right: 56px; }
+  .credits-strip .track { display: inline-flex; gap: 56px; white-space: nowrap; will-change: transform; cursor: grab; user-select: none; }
+  .credits-strip .track.dragging { cursor: grabbing; }
   .credits-strip .track span { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 20px; color: var(--fg-3); }
   .credits-strip .track span b { font-style: normal; font-weight: 400; color: var(--fg-2); }
-  @keyframes scroll-l { to { transform: translateX(-50%); } }
 
   /* Section heading */
   .sec-h { padding: 100px 56px 40px; display: flex; align-items: baseline; justify-content: space-between; }
@@ -291,6 +291,11 @@
   /* Career — secondary exchange line */
   .cv-row .org .exch2 { display: block; margin-top: 5px; font-size: 11px; letter-spacing: 0.05em; color: var(--fg-3); }
 
+  /* Respect reduced-motion for the CSS-driven animations (JS loops gate themselves) */
+  @media (prefers-reduced-motion: reduce) {
+    .hero .scroll .line { animation: none; }
+  }
+
   /* ---------- Responsive ---------- */
   @media (max-width: 1080px) {
     .nav { padding: 26px 32px; }
@@ -357,7 +362,7 @@
     <a href="#about">About</a>
     <a href="#cv">Career</a>
     <a href="#contact">Contact</a>
-    <a href="https://vimeo.com/1130622647" target="_blank" class="gold">Reel</a>
+    <a href="https://vimeo.com/1130622647" target="_blank" rel="noopener" class="gold">Reel</a>
   </div>
 </nav>
 
@@ -386,6 +391,18 @@
     <span><b>Sky Force</b> · Sparks · Smoke</span>
     <span><b>Ticket to Paradise</b> · Water Ripples RnD</span>
     <span><b>Interceptor</b> · Flags · Procedural Exhaust Flames · Steam · Smoke · Sparks</span>
+    <span aria-hidden="true"><b>Mad Max: Furiosa</b> · Sandstorm · Dust Crowd Atmos · Bullets · Glass · Fire · Oil</span>
+    <span aria-hidden="true"><b>Masters of the Universe</b> · Magical Portal Renderman Lookdev · Large-scale Dust · Shot Automation</span>
+    <span aria-hidden="true"><b>M3GAN</b> · Character Splitting · Cloth · Wires · Hardware Parts · Smoke</span>
+    <span aria-hidden="true"><b>Toxic</b> · Fast Moving Smoke · Wood Glass Concrete RBD · Trailing Fire and Smoke</span>
+    <span aria-hidden="true"><b>Play Dirty</b> · Snowfall · Sparks · Snow Environment</span>
+    <span aria-hidden="true"><b>3000 Years of Longing</b> · Red String</span>
+    <span aria-hidden="true"><b>The Last Frontier</b> · Vehicle Crash from Reference · Continuous Dense Sparks</span>
+    <span aria-hidden="true"><b>Thamma</b> · Dust · Concrete RBD</span>
+    <span aria-hidden="true"><b>Bureau 749</b> · Large-scale Dust · Vapour</span>
+    <span aria-hidden="true"><b>Sky Force</b> · Sparks · Smoke</span>
+    <span aria-hidden="true"><b>Ticket to Paradise</b> · Water Ripples RnD</span>
+    <span aria-hidden="true"><b>Interceptor</b> · Flags · Procedural Exhaust Flames · Steam · Smoke · Sparks</span>
   </div>
 </div>
 
@@ -396,7 +413,7 @@
 
 <section class="films">
   <div class="feature" data-fx="sandstorm" data-fx-feature>
-    <div class="img"><div class="ph ph-furiosa"></div></div><a target="_blank" href="https://vimeo.com/1130622647">
+    <div class="img"><div class="ph ph-furiosa"></div></div><a target="_blank" rel="noopener" href="https://vimeo.com/1130622647" aria-label="Watch the Mad Max: Furiosa reel on Vimeo">
     <div class="grad"></div>
     <div class="cap">
       <div class="micro yr gold">2024 · Sandstorm</div>
@@ -408,7 +425,7 @@
       <!-- <p>Worked on Fire, emitted and destruction RBD, minor FLIP simulations. RnD on Vehicle Trails and Rooster Tails.</p> -->
       <div class="studio-reveal" style="margin-top:14px;">DNEG</div><div class="fx">Sandstorm · Dust Crowd Atmos · Vehicle Trails RnD</div>
     </div>
-    <div class="play">▶</div></a>
+    <div class="play" aria-hidden="true">▶</div></a>
   </div>
 
   <div class="grid">
@@ -507,15 +524,16 @@
   <h2>Let's <a href="mailto:fuadsoudah@gmail.com" class="it">chat</a></h2>
   <div class="links">
     <a href="mailto:fuadsoudah@gmail.com">fuadsoudah@gmail.com</a>
-    <a href="https://vimeo.com/1130622647" target="_blank">Vimeo</a>
-    <a href="https://www.linkedin.com/in/fuad-soudah" target="_blank">LinkedIn</a>
-    <a href="https://www.imdb.com/name/nm13765535" target="_blank">IMDb</a>
+    <a href="https://vimeo.com/1130622647" target="_blank" rel="noopener">Vimeo</a>
+    <a href="https://www.linkedin.com/in/fuad-soudah" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://www.imdb.com/name/nm13765535" target="_blank" rel="noopener">IMDb</a>
   </div>
 </section>
 
 <script>
   // Hero: slow drifting embers/dust
   (function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;   // respect reduced motion
     const c = document.getElementById('hero-c');
     const ctx = c.getContext('2d');
     function size() { c.width = c.offsetWidth; c.height = c.offsetHeight; }
@@ -534,7 +552,9 @@
     }
     let mx = 0;
     c.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); mx = (e.clientX - r.left - c.width/2) / c.width; });
+    let raf = 0, running = false;
     function draw() {
+      if (!running) { raf = 0; return; }
       ctx.clearRect(0, 0, c.width, c.height);
       for (const p of ps) {
         p.x += p.vx + mx * 0.6; p.y += p.vy;
@@ -546,13 +566,20 @@
         ctx.arc(p.x, p.y, p.size, 0, 6.283);
         ctx.fill();
       }
-      requestAnimationFrame(draw);
+      raf = requestAnimationFrame(draw);
     }
-    draw();
+    // pause the ember loop while the hero is scrolled out of view
+    new IntersectionObserver(es => {
+      for (const e of es) {
+        if (e.isIntersecting) { if (!running) { running = true; raf = requestAnimationFrame(draw); } }
+        else running = false;
+      }
+    }, { threshold: 0 }).observe(c);
   })();
 
   // Subtle eased smooth-scroll for in-page nav links
   (function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;   // let nav links jump natively
     const easeInOutCubic = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
     function scrollTo(targetY, duration) {
       const startY = window.pageYOffset;
@@ -579,6 +606,43 @@
         scrollTo(y, dur);
       });
     });
+  })();
+
+  // Credits reel — slow auto-drift, slows to a crawl on hover, and drag to scrub / fling left or right.
+  (function () {
+    const strip = document.querySelector('.credits-strip');
+    const track = strip && strip.querySelector('.track');
+    if (!track) return;
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const AUTO = reduce ? 0 : -0.4;            // base leftward drift (px/frame) — calm
+    let setW = 0, offset = 0, vel = AUTO, hovering = false, dragging = false, lastX = 0, dragVel = 0, raf = 0;
+
+    const measure = () => { setW = track.scrollWidth / 2; };   // one content set (the track is duplicated)
+    measure();
+    window.addEventListener('resize', measure);
+    window.addEventListener('load', measure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+
+    strip.addEventListener('mouseenter', () => hovering = true);
+    strip.addEventListener('mouseleave', () => hovering = false);
+    strip.addEventListener('pointerdown', e => { dragging = true; lastX = e.clientX; dragVel = 0; track.classList.add('dragging'); start(); });
+    window.addEventListener('pointermove', e => { if (!dragging) return; const dx = e.clientX - lastX; lastX = e.clientX; offset += dx; dragVel = dx; });
+    window.addEventListener('pointerup', () => { if (!dragging) return; dragging = false; track.classList.remove('dragging'); vel = Math.max(-40, Math.min(40, dragVel)); });   // release → fling
+
+    function tick() {
+      if (!setW) measure();
+      if (!dragging) {
+        const target = hovering ? AUTO * 0.15 : AUTO;    // hover → crawl
+        vel += (target - vel) * 0.04;                    // eases fling momentum back to the base drift
+        offset += vel;
+      }
+      if (setW > 0) { offset %= setW; if (offset > 0) offset -= setW; }   // seamless wrap
+      track.style.transform = 'translateX(' + offset.toFixed(2) + 'px)';
+      if (reduce && !dragging && Math.abs(vel) < 0.03) { raf = 0; return; }  // idle → stop under reduced motion
+      raf = requestAnimationFrame(tick);
+    }
+    function start() { if (!raf) raf = requestAnimationFrame(tick); }
+    if (!reduce) start();
   })();
 
   // Procedural FX cards — a small library of effect modules, one per FX discipline.
@@ -1007,7 +1071,13 @@
       g.img.src = g.gif;                            // play from the start
     }
     gifs.forEach(g => g.card.addEventListener('mouseenter', () => activate(g)));
-    activate(gifs.find(g => /M3GAN/i.test(g.gif)) || gifs[0]);   // M3GAN plays first
+    // M3GAN plays first — but defer its gif fetch until the page is idle so it doesn't block first paint
+    const first = gifs.find(g => /M3GAN/i.test(g.gif)) || gifs[0];
+    if (first) {
+      const start = () => { if (!active) activate(first); };   // skip if the visitor already hovered another card
+      if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 2000 });
+      else setTimeout(start, 800);
+    }
   })();
 </script>
 </body>
