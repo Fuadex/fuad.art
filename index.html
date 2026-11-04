@@ -195,7 +195,7 @@
 
   /* image placeholder fills */
   .ph { width: 100%; height: 100%; }
-  img.ph { object-fit: cover; display: block; }
+  img.ph, video.ph { object-fit: cover; display: block; }
   .ph-motu { background: radial-gradient(circle at 60% 40%, #d98a4a, #2a1408 70%); }
   .ph-furiosa { background: linear-gradient(160deg, #c89a52 0%, #6b4420 55%, #2a1808 100%); }
   .ph-toxic { background: linear-gradient(135deg, #1a2e3c, #4a6b88 90%); }
@@ -436,7 +436,7 @@
       <a class="cardlink" href="https://www.imdb.com/title/tt0427340/" target="_blank" rel="noopener" aria-label="Masters of the Universe on IMDb"></a>
     </div>
     <div class="card blk">
-      <div class="img"><img class="ph ph-m3gan" src="img/M3GAN_still.jpg" data-gif="img/M3GAN.gif" alt="M3GAN FX" loading="lazy"></div>
+      <div class="img"><video class="ph ph-m3gan" muted loop playsinline preload="none" poster="img/M3GAN_still.jpg" aria-label="M3GAN — vellum cloth and wires FX clip"><source src="img/M3GAN.mp4" type="video/mp4"></video></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4><span class="it">M3GAN</span></h4><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Vellum Cloth · Wires · Hardware Parts · Deformer Solver · Smoke</div></div>
       <a class="cardlink" href="https://www.imdb.com/title/tt8760708/" target="_blank" rel="noopener" aria-label="M3GAN on IMDb"></a>
@@ -454,7 +454,7 @@
       <a class="cardlink" href="https://www.imdb.com/title/tt26862142/" target="_blank" rel="noopener" aria-label="The Last Frontier on IMDb"></a>
     </div>
     <div class="card blk">
-      <div class="img"><img class="ph ph-longing" src="img/TTYOL_still.jpg" data-gif="img/TTYOL.gif" alt="3000 Years of Longing FX" loading="lazy"></div>
+      <div class="img"><video class="ph ph-longing" muted loop playsinline preload="none" poster="img/TTYOL_still.jpg" aria-label="3000 Years of Longing — magical string FX clip"><source src="img/TTYOL.mp4" type="video/mp4"></video></div>
       <div class="grad"></div>
       <div class="cap"><div class="top"><h4>3000 Years of <span class="it">Longing</span></h4><span class="yr">'21</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Magical String</div></div>
       <a class="cardlink" href="https://www.imdb.com/title/tt9198364/" target="_blank" rel="noopener" aria-label="3000 Years of Longing on IMDb"></a>
@@ -472,8 +472,8 @@
     <span class="micro">Supporting &amp; element work</span>
   </div>
   <div class="grid-sm">
-    <div class="card-sm span2">
-      <div class="img"><img class="ph ph-thamma" src="img/tvc_still.jpg" data-gif="img/tvc.gif" alt="TVC" loading="lazy" style="transform:scale(1.12)"></div>
+    <div class="card-sm span2" data-fx="grains">
+      <div class="img"><div class="ph ph-thamma"></div></div>
       <div class="grad"></div>
       <div class="cap"><h5><span class="it">TVC</span></h5><div class="line"><span class="yr">'25</span></div><div class="studio-reveal">Freelance</div><div class="fx">Sand Environment · Vellum Grains · Particles</div></div>
     </div>
@@ -492,7 +492,7 @@
 -->
 
     <div class="card-sm span2">
-      <div class="img"><img class="ph ph-interceptor" src="img/interceptor_still.jpg" data-gif="img/interceptor.gif" alt="Interceptor FX" loading="lazy"></div>
+      <div class="img"><video class="ph ph-interceptor" muted loop playsinline preload="none" poster="img/interceptor_still.jpg" aria-label="Interceptor — flags, smoke and steam FX clip"><source src="img/interceptor.mp4" type="video/mp4"></video></div>
       <div class="grad"></div>
       <div class="cap"><h5><span class="it">Interceptor</span></h5><div class="line"><span class="yr">'22</span></div><div class="studio-reveal">Fin Design + Effects</div><div class="fx">Flags · Smoke · Steam · Heat Haze</div></div>
       <a class="cardlink" href="https://www.imdb.com/title/tt14174940/" target="_blank" rel="noopener" aria-label="Interceptor on IMDb"></a>
@@ -1056,25 +1056,28 @@
     });
   })();
 
-  // GIF playback — only ONE gif plays at a time (sticky). M3GAN plays on load; hovering another gif
-  // hands playback to it and it keeps playing until a different gif is hovered. (A browser GIF can't be
-  // paused mid-frame, so the outgoing one rests on its still/first frame.)
+  // FX clip playback — only ONE clip plays at a time (sticky). M3GAN plays on load (desktop only);
+  // hovering another clip hands playback to it. Unlike the old GIFs, video pauses mid-frame, so the
+  // outgoing clip freezes where it is. preload="none" keeps all four clips off the wire until played.
   (function () {
-    const gifs = [...document.querySelectorAll('img[data-gif]')].map(img => ({
-      img, still: img.getAttribute('src'), gif: img.getAttribute('data-gif'),
-      card: img.closest('.card, .card-sm')
-    })).filter(g => g.card);
+    const clips = [...document.querySelectorAll('video.ph')].map(v => ({
+      v, card: v.closest('.card, .card-sm')
+    })).filter(c => c.card);
+    if (!clips.length) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;   // posters only
     let active = null;
-    function activate(g) {
-      if (g === active) return;
-      if (active) active.img.src = active.still;   // outgoing rests on its first frame
-      active = g;
-      g.img.src = g.gif;                            // play from the start
+    function activate(c) {
+      if (c === active) return;
+      if (active) active.v.pause();                 // outgoing freezes mid-frame
+      active = c;
+      if (c.v.readyState > 0) c.v.currentTime = 0;  // play from the start
+      const p = c.v.play(); if (p) p.catch(() => {});
     }
-    gifs.forEach(g => g.card.addEventListener('mouseenter', () => activate(g)));
-    // M3GAN plays first — but defer its gif fetch until the page is idle so it doesn't block first paint
-    const first = gifs.find(g => /M3GAN/i.test(g.gif)) || gifs[0];
-    if (first) {
+    clips.forEach(c => c.card.addEventListener('mouseenter', () => activate(c)));
+    // M3GAN plays first on hover-capable devices — deferred until idle so it doesn't block first paint.
+    // On touch devices nothing autoplays: posters stand in and a tap follows the card link instead.
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const first = clips.find(c => /M3GAN/i.test(c.v.querySelector('source').getAttribute('src'))) || clips[0];
       const start = () => { if (!active) activate(first); };   // skip if the visitor already hovered another card
       if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 2000 });
       else setTimeout(start, 800);
