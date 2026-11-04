@@ -1056,10 +1056,13 @@
     });
   })();
 
-  // FX clip playback — only ONE clip plays at a time (sticky). M3GAN plays on load (desktop only);
-  // hovering another clip hands playback to it. Unlike the old GIFs, video pauses mid-frame, so the
-  // outgoing clip freezes where it is. preload="none" keeps all four clips off the wire until played.
+  // FX clip playback + scrub — only ONE clip plays at a time (sticky). M3GAN plays on load (desktop
+  // only); hovering another clip hands playback to it. Moving the pointer across the hovered clip
+  // scrubs it frame-by-frame (pointer x maps to the timeline; clips are encoded with 8-frame GOPs
+  // so seeks land instantly); playback resumes from that frame when the pointer rests or leaves.
+  // preload="none" keeps clips off the wire until first played.
   (function () {
+    const FPS = 25;                                 // all clips are 25fps
     const clips = [...document.querySelectorAll('video.ph')].map(v => ({
       v, card: v.closest('.card, .card-sm')
     })).filter(c => c.card);
@@ -1073,7 +1076,25 @@
       if (c.v.readyState > 0) c.v.currentTime = 0;  // play from the start
       const p = c.v.play(); if (p) p.catch(() => {});
     }
-    clips.forEach(c => c.card.addEventListener('mouseenter', () => activate(c)));
+    clips.forEach(c => {
+      const { v, card } = c;
+      let resume = 0;
+      card.addEventListener('mouseenter', () => activate(c));
+      card.addEventListener('mousemove', e => {
+        if (c !== active || !v.duration) return;    // metadata not in yet — keep playing
+        const r = card.getBoundingClientRect();
+        const x = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1);
+        const frame = Math.min(Math.round(x * v.duration * FPS), Math.ceil(v.duration * FPS) - 1);
+        v.pause();
+        if (!v.seeking) v.currentTime = frame / FPS; // skip while a seek is in flight; next move catches up
+        clearTimeout(resume);
+        resume = setTimeout(() => { if (c === active) v.play().catch(() => {}); }, 400);
+      });
+      card.addEventListener('mouseleave', () => {
+        clearTimeout(resume);
+        if (c === active && v.paused) v.play().catch(() => {});
+      });
+    });
     // M3GAN plays first on hover-capable devices — deferred until idle so it doesn't block first paint.
     // On touch devices nothing autoplays: posters stand in and a tap follows the card link instead.
     if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
